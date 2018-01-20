@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<script type="text/javascript" src="{%  static  "js/dist/test1.js"  %}"></script>
+<script type="text/javascript" src="{%  static  "js/dist/test2.js"  %}"></script>
+
+<style>
+#main {
+    width: 100%;
+    height: 100%;
+}
+
+#players-tag {
+    text-align: center;
+}
+
+#others-tag {
+    text-align: center;
+}
+
+#players-sidebar {
+    width: 15%;
+    height: 80%;
+    margin-left: 1%;
+    margin-top: 1%;
+    float: left;
+}
+
+#firepad {
+    width: 100%;
+    height: 100%;
+    margin-left: 2%;
+    margin-top: 1%;
+    float: left;
+}
+
+
+.firepad {
+    width: 65%;
+    height: 450px;
+    position: relative;
+    float: left;
+    margin-top: 1%;
+    margin-right: 2%;
+}
+
+#others-sidebar {
+    width: 15%;
+    height: 80%;
+    margin-left: 1%;
+    margin-top: 1%;
+    float: left;
+}
+
+#player-button {
+    margin-bottom: 20px;
+    width: 100%;
+    height: 10%;
+}
+
+#other-button {
+    margin-bottom: 20px;
+    width: 100%;
+    height: 10%;
+}
+
+#turn-duration {
+    text-align: center;
+    border: 1px solid black;
+    height: 150px;
+}
+
+#clock-text {
+    font-size: 3em;
+    text-align: center;
+}
+
+#bottom-tag {
+    text-align: center;
+}
+
+#bottom-button {
+    display: inline-block;
+    width: 10%;
+    height: 100%;
+    margin-left: 10%;
+    float: left;
+}
+
+#bottom-bar {
+    display: block;
+    width: 90%;
+    height: 20%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2%;
+}
+
+#clear-line {
+    clear: both;
+}
+
+}
+</style>
+
+<div id="main">
+      <div id="players-sidebar">
+          <h2 id="players-tag">Players</h2>
+          <button id="player-button" type="button" class="btn btn-primary">Player1</button>
+          <button id="player-button" type="button" class="btn btn-primary">Player2</button>
+          <button id="player-button" type="button" class="btn btn-primary">Player3</button>
+          <button id="player-button" type="button" class="btn btn-primary">Player4</button>
+      </div>
+
+      <div id="firepad"></div>
+
+      <div id="others-sidebar">
+          <h2 id="others-tag">Other stuff</h2>
+          <button id="player-button" type="button" class="btn btn-warning">see other players lines1</button>
+          <button id="player-button" type="button" class="btn btn-warning">see other players lines2</button>
+          <button id="player-button" type="button" class="btn btn-warning">see other players lines3</button>
+          <button id="player-button" type="button" class="btn btn-danger">Run</button>
+          <div id="turn-duration">
+          <p id="clock-text">
+             clock here?
+          </p>
+
+          </div>
+      </div>
+</div>
+
+<br id="clear-line"/>
+
+<div>
+    <div id="bottom-bar">
+        <h2 id="bottom-tag">bottom stuff</h2>
+        <button id="bottom-button" type="button" class="btn btn-primary">Player1</button>
+        <button id="bottom-button" type="button" class="btn btn-primary">Player2</button>
+        <button id="bottom-button" type="button" class="btn btn-primary">Player3</button>
+        <button id="bottom-button" type="button" class="btn btn-primary">Player4</button>
+    </div>
+</div>
+
+<br id="clear-line"/>
+
+<script>
+function init() {
+    // Initialize Firebase.
+    var config = {
+        apiKey: "AIzaSyBH4BcB5AZonEW011pWBUok3zUzC-nX940",
+        authDomain: "hc-sudden-dev.firebaseapp.com",
+        databaseURL: "https://hc-sudden-dev.firebaseio.com",
+        projectId: "hc-sudden-dev",
+        storageBucket: "",
+        messagingSenderId: "98704897205"
+    };
+    firebase.initializeApp(config);
+
+    // Get Firebase Database reference.
+    var firepadRef = getExampleRef();
+
+    // Create Ace editor.
+    var editor = ace.edit('firepad');
+
+    // Create Firepad.
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/javascript");
+
+    //// Create Firepad.
+    var firepad = Firepad.fromACE(firepadRef, editor, {
+        defaultText: '// JavaScript Editing with Firepad!\nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'
+    });
+}
+
+init();
+
+// Helper to get hash from end of URL or generate a random one.
+function getExampleRef() {
+    var ref = firebase.database().ref();
+    var hash = window.location.hash.replace(/#/g, '');
+    if (hash) {
+    ref = ref.child(hash);
+    } else {
+    ref = ref.push(); // generate unique location.
+    window.location = window.location + '#' + ref.key; // add it as a hash to the URL.
+    }
+    if (typeof console !== 'undefined') {
+    console.log('Firebase data: ', ref.toString());
+    }
+    return ref;
+}
+</script>
+{% endblock %}
