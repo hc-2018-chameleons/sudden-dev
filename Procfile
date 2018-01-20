@@ -1,1 +1,1 @@
-web: gunicorn yemen.wsgi --log-file -
+web: gunicorn suddendev.wsgi --log-file -
