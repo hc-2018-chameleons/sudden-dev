@@ -8,11 +8,19 @@
   <p>
     <form id="name-form">
     <input id="name-field">
-    <a class="button button-primary" href="{% url 'new_room' %}">Create new chat room</a>
+    <a class="button button-primary" onClick="handleNewRoom()">Create new chat room</a>
     </form>
   </p>
   <p class="quiet">
     Or, you can visit <code>{{ request.scheme }}://{{ request.get_host }}/any-path-you-want</code> 
     to create a arbitrary room or join one whose name you know.
   </p>
+
+  <script>
+    function handleNewRoom() {
+      var name = document.getElementById('name-field').value
+      document.cookie = "name=" + name;
+      window.open({% url 'new_room'%})
+    }
+  </script>
 {% endblock content %} 
