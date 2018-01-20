@@ -9,10 +9,8 @@ const initial = {
 
 let store = createStore(
   reducers,
-  initial
+  initial,
+  applyMiddleware(wsMiddleware)
 );
 
-  //compose(applyMiddleware(wsMiddleware),
-    //window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  //)
 export default store;

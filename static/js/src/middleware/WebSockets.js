@@ -13,7 +13,6 @@ const socketMiddleware = (function () {
   const onOpen = (ws, store, host) => event => {
     // Authenticate with Backend... somehow...
     store.dispatch(client_actions.wsConnected(host))
-    store.dispatch(player_actions.playerAdd('asdfasdf'))
   };
 
   /**
@@ -28,6 +27,8 @@ const socketMiddleware = (function () {
    */
   const onMessage = (ws, store) => event => {
     const payload = JSON.parse(event.data);
+
+    console.log(payload);
 
     switch (payload.type) {
       case server_actions.WS_HEALTH:

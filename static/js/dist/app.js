@@ -66,6 +66,14 @@
 
 	var _playerlist2 = _interopRequireDefault(_playerlist);
 
+	var _sidebar = __webpack_require__(216);
+
+	var _sidebar2 = _interopRequireDefault(_sidebar);
+
+	var _editor = __webpack_require__(217);
+
+	var _editor2 = _interopRequireDefault(_editor);
+
 	var _WebSocketConnection = __webpack_require__(215);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
@@ -96,19 +104,36 @@
 	  _createClass(App, [{
 	    key: "render",
 	    value: function render() {
-	      return _react2.default.createElement(_playerlist2.default, null);
+	      return _react2.default.createElement(
+	        "div",
+	        { id: "main" },
+	        _react2.default.createElement(
+	          "div",
+	          { id: "players-sidebar" },
+	          _react2.default.createElement(_playerlist2.default, null)
+	        ),
+	        _react2.default.createElement(_editor2.default, null),
+	        _react2.default.createElement(
+	          "div",
+	          { id: "others-sidebar" },
+	          _react2.default.createElement(_sidebar2.default, null)
+	        )
+	      );
 	    }
 	  }]);
 
 	  return App;
 	}(_react.Component);
 
+	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+	var chatsock = ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname;
+
 	_reactDom2.default.render(_react2.default.createElement(
 	  _reactRedux.Provider,
 	  { store: _store2.default },
 	  _react2.default.createElement(
 	    _WebSocketConnection2.default,
-	    { host: "ws://localhost:8000/tracking", autoconnect: true },
+	    { host: chatsock, autoconnect: true },
 	    _react2.default.createElement(App, null)
 	  )
 	), rootElement);
@@ -23278,11 +23303,8 @@
 	  players: []
 	};
 
-	var store = (0, _redux.createStore)(_reducers.reducers, initial);
+	var store = (0, _redux.createStore)(_reducers.reducers, initial, (0, _redux.applyMiddleware)(_WebSockets2.default));
 
-	//compose(applyMiddleware(wsMiddleware),
-	//window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-	//)
 	exports.default = store;
 
 /***/ }),
@@ -23477,7 +23499,6 @@
 	    return function (event) {
 	      // Authenticate with Backend... somehow...
 	      store.dispatch(client_actions.wsConnected(host));
-	      store.dispatch(player_actions.playerAdd('asdfasdf'));
 	    };
 	  };
 
@@ -23496,6 +23517,8 @@
 	  var onMessage = function onMessage(ws, store) {
 	    return function (event) {
 	      var payload = JSON.parse(event.data);
+
+	      console.log(payload);
 
 	      switch (payload.type) {
 	        case server_actions.WS_HEALTH:
@@ -23619,14 +23642,19 @@
 	                'div',
 	                null,
 	                _react2.default.createElement(
+	                    'h2',
+	                    { id: 'players-tag' },
+	                    'Players'
+	                ),
+	                _react2.default.createElement(
 	                    'ul',
 	                    null,
 
 	                    //TODO: make this into buttons or sth
 	                    this.props.players.map(function (data, i) {
 	                        return _react2.default.createElement(
-	                            'li',
-	                            { key: i },
+	                            'button',
+	                            { id: 'player-button', type: 'button', className: 'btn btn-primary', key: i },
 	                            data.player
 	                        );
 	                    })
@@ -23718,6 +23746,132 @@
 	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
+
+/***/ }),
+/* 216 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(159);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Sidebar = function (_Component) {
+	    _inherits(Sidebar, _Component);
+
+	    function Sidebar(props) {
+	        _classCallCheck(this, Sidebar);
+
+	        return _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
+	    }
+
+	    _createClass(Sidebar, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                    'h2',
+	                    { id: 'others-tag' },
+	                    'Other stuff'
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { id: 'player-button', type: 'button', className: 'btn btn-warning' },
+	                    'see other players lines1'
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { id: 'player-button', type: 'button', className: 'btn btn-warning' },
+	                    'see other players lines2'
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { id: 'player-button', type: 'button', className: 'btn btn-danger' },
+	                    'Run'
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { id: 'turn-duration' },
+	                    _react2.default.createElement(
+	                        'p',
+	                        { id: 'clock-text' },
+	                        'clock here?'
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Sidebar;
+	}(_react.Component);
+
+	exports.default = Sidebar;
+
+/***/ }),
+/* 217 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(159);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Editor = function (_Component) {
+	    _inherits(Editor, _Component);
+
+	    function Editor(props) {
+	        _classCallCheck(this, Editor);
+
+	        return _possibleConstructorReturn(this, (Editor.__proto__ || Object.getPrototypeOf(Editor)).call(this, props));
+	    }
+
+	    _createClass(Editor, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement('div', { id: 'firepad' });
+	        }
+	    }]);
+
+	    return Editor;
+	}(_react.Component);
+
+	exports.default = Editor;
 
 /***/ })
 /******/ ]);

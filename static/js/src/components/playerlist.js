@@ -10,11 +10,12 @@ class PlayerList extends Component {
     render() {
         return (
         <div>
+            <h2 id="players-tag">Players</h2>
             <ul>
                 {
                     //TODO: make this into buttons or sth
                     this.props.players.map(function(data, i) {
-                        return <li key={i}>{data.player}</li>
+                        return <button id="player-button" type="button" className="btn btn-primary" key={i}>{data.player}</button>
                     })
                 }
             </ul>
