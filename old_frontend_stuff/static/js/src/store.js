@@ -1,9 +1,9 @@
 import {createStore, combineReducers} from 'redux';
-import addPlayer from './reducers/index';
+import playerBar from './reducers/index';
 
 export default function configureStore(initialStore) {
     const reducers = {
-        addPlayer
+        playerBar
     };
 
     const rootReducer = combineReducers(reducers);
