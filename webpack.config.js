@@ -1,4 +1,4 @@
-var baseDir = __dirname + '/hello/static/js';
+var baseDir = __dirname + '/core/static/js';
 
 module.exports = {
   context: baseDir + '/src',
