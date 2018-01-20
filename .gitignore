@@ -1,0 +1,9 @@
+venv
+*.pyc
+staticfiles
+.env
+db.sqlite3
+.idea
+.DS_Store
+dist/
+node_modules
