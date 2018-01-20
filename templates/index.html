@@ -99,94 +99,96 @@
     clear: both;
 }
 
-}
 </style>
 
-<div id="main">
-      <div id="players-sidebar">
-          <h2 id="players-tag">Players</h2>
-          <button id="player-button" type="button" class="btn btn-primary">Player1</button>
-          <button id="player-button" type="button" class="btn btn-primary">Player2</button>
-          <button id="player-button" type="button" class="btn btn-primary">Player3</button>
-          <button id="player-button" type="button" class="btn btn-primary">Player4</button>
-      </div>
+<div id="app"></div>
+<script src={% static 'js/dist/app.js' %} data-container="#app"></script>
 
-      <div id="firepad"></div>
+<!--<div id="main">-->
+      <!--<div id="players-sidebar">-->
+          <!--<h2 id="players-tag">Players</h2>-->
+          <!--<button id="player-button" type="button" class="btn btn-primary">Player1</button>-->
+          <!--<button id="player-button" type="button" class="btn btn-primary">Player2</button>-->
+          <!--<button id="player-button" type="button" class="btn btn-primary">Player3</button>-->
+          <!--<button id="player-button" type="button" class="btn btn-primary">Player4</button>-->
+      <!--</div>-->
 
-      <div id="others-sidebar">
-          <h2 id="others-tag">Other stuff</h2>
-          <button id="player-button" type="button" class="btn btn-warning">see other players lines1</button>
-          <button id="player-button" type="button" class="btn btn-warning">see other players lines2</button>
-          <button id="player-button" type="button" class="btn btn-warning">see other players lines3</button>
-          <button id="player-button" type="button" class="btn btn-danger">Run</button>
-          <div id="turn-duration">
-          <p id="clock-text">
-             clock here?
-          </p>
+      <!--<div id="firepad"></div>-->
 
-          </div>
-      </div>
-</div>
+      <!--<div id="others-sidebar">-->
+          <!--<h2 id="others-tag">Other stuff</h2>-->
+          <!--<button id="player-button" type="button" class="btn btn-warning">see other players lines1</button>-->
+          <!--<button id="player-button" type="button" class="btn btn-warning">see other players lines2</button>-->
+          <!--<button id="player-button" type="button" class="btn btn-warning">see other players lines3</button>-->
+          <!--<button id="player-button" type="button" class="btn btn-danger">Run</button>-->
+          <!--<div id="turn-duration">-->
+          <!--<p id="clock-text">-->
+             <!--clock here?-->
+          <!--</p>-->
 
-<br id="clear-line"/>
+          <!--</div>-->
+      <!--</div>-->
+<!--</div>-->
 
-<div>
-    <div id="bottom-bar">
-        <h2 id="bottom-tag">bottom stuff</h2>
-        <button id="bottom-button" type="button" class="btn btn-primary">Player1</button>
-        <button id="bottom-button" type="button" class="btn btn-primary">Player2</button>
-        <button id="bottom-button" type="button" class="btn btn-primary">Player3</button>
-        <button id="bottom-button" type="button" class="btn btn-primary">Player4</button>
-    </div>
-</div>
+<!--<br id="clear-line"/>-->
 
-<br id="clear-line"/>
+<!--<div>-->
+    <!--<div id="bottom-bar">-->
+        <!--<h2 id="bottom-tag">bottom stuff</h2>-->
+        <!--<button id="bottom-button" type="button" class="btn btn-primary">Player1</button>-->
+        <!--<button id="bottom-button" type="button" class="btn btn-primary">Player2</button>-->
+        <!--<button id="bottom-button" type="button" class="btn btn-primary">Player3</button>-->
+        <!--<button id="bottom-button" type="button" class="btn btn-primary">Player4</button>-->
+    <!--</div>-->
+<!--</div>-->
 
-<script>
-function init() {
-    // Initialize Firebase.
-    var config = {
-        apiKey: "AIzaSyBH4BcB5AZonEW011pWBUok3zUzC-nX940",
-        authDomain: "hc-sudden-dev.firebaseapp.com",
-        databaseURL: "https://hc-sudden-dev.firebaseio.com",
-        projectId: "hc-sudden-dev",
-        storageBucket: "",
-        messagingSenderId: "98704897205"
-    };
-    firebase.initializeApp(config);
+<!--<br id="clear-line"/>-->
 
-    // Get Firebase Database reference.
-    var firepadRef = getExampleRef();
+<!--<script>-->
+<!--function init() {-->
+    <!--// Initialize Firebase.-->
+    <!--var config = {-->
+        <!--apiKey: "AIzaSyBH4BcB5AZonEW011pWBUok3zUzC-nX940",-->
+        <!--authDomain: "hc-sudden-dev.firebaseapp.com",-->
+        <!--databaseURL: "https://hc-sudden-dev.firebaseio.com",-->
+        <!--projectId: "hc-sudden-dev",-->
+        <!--storageBucket: "",-->
+        <!--messagingSenderId: "98704897205"-->
+    <!--};-->
+    <!--firebase.initializeApp(config);-->
 
-    // Create Ace editor.
-    var editor = ace.edit('firepad');
+    <!--// Get Firebase Database reference.-->
+    <!--var firepadRef = getExampleRef();-->
 
-    // Create Firepad.
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/javascript");
+    <!--// Create Ace editor.-->
+    <!--var editor = ace.edit('firepad');-->
 
-    //// Create Firepad.
-    var firepad = Firepad.fromACE(firepadRef, editor, {
-        defaultText: '// JavaScript Editing with Firepad!\nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'
-    });
-}
+    <!--// Create Firepad.-->
+    <!--editor.setTheme("ace/theme/monokai");-->
+    <!--editor.session.setMode("ace/mode/javascript");-->
 
-init();
+    <!--//// Create Firepad.-->
+    <!--var firepad = Firepad.fromACE(firepadRef, editor, {-->
+        <!--defaultText: '// JavaScript Editing with Firepad!\nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'-->
+    <!--});-->
+<!--}-->
 
-// Helper to get hash from end of URL or generate a random one.
-function getExampleRef() {
-    var ref = firebase.database().ref();
-    var hash = window.location.hash.replace(/#/g, '');
-    if (hash) {
-    ref = ref.child(hash);
-    } else {
-    ref = ref.push(); // generate unique location.
-    window.location = window.location + '#' + ref.key; // add it as a hash to the URL.
-    }
-    if (typeof console !== 'undefined') {
-    console.log('Firebase data: ', ref.toString());
-    }
-    return ref;
-}
-</script>
+<!--init();-->
+
+<!--// Helper to get hash from end of URL or generate a random one.-->
+<!--function getExampleRef() {-->
+    <!--var ref = firebase.database().ref();-->
+    <!--var hash = window.location.hash.replace(/#/g, '');-->
+    <!--if (hash) {-->
+    <!--ref = ref.child(hash);-->
+    <!--} else {-->
+    <!--ref = ref.push(); // generate unique location.-->
+    <!--window.location = window.location + '#' + ref.key; // add it as a hash to the URL.-->
+    <!--}-->
+    <!--if (typeof console !== 'undefined') {-->
+    <!--console.log('Firebase data: ', ref.toString());-->
+    <!--}-->
+    <!--return ref;-->
+<!--}-->
+<!--</script>-->
 {% endblock %}

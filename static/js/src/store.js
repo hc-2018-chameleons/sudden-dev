@@ -1,12 +1,18 @@
-import {createStore, combineReducers} from 'redux';
-import playerBar from './reducers/index';
+import { createStore, applyMiddleware, compose } from "redux";
+import { reducers } from "./reducers";
+import wsMiddleware from "./middleware/WebSockets";
 
-export default function configureStore(initialStore) {
-    const reducers = {
-        playerBar
-    };
-
-    const rootReducer = combineReducers(reducers);
-
-    return createStore(rootReducer, initialStore);
+const initial = {
+    ws: {host: []},
+    players: []
 }
+
+let store = createStore(
+  reducers,
+  initial
+);
+
+  //compose(applyMiddleware(wsMiddleware),
+    //window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  //)
+export default store;

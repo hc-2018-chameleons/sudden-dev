@@ -6,6 +6,7 @@ staticfiles/
 venv/
 __pycache__/
 redis-stable/
+node_modules/
 *.swp
 *.swo
 tags

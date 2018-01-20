@@ -6,7 +6,7 @@ import haikunator
 from .models import Room
 
 def about(request):
-    return render(request, "chat/about.html")
+    return render(request, "index.html")
 
 def new_room(request):
     """
