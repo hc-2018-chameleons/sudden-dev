@@ -62,29 +62,29 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _playerlist = __webpack_require__(215);
+	var _playerlist = __webpack_require__(216);
 
 	var _playerlist2 = _interopRequireDefault(_playerlist);
 
-	var _problembar = __webpack_require__(216);
+	var _problembar = __webpack_require__(217);
 
 	var _problembar2 = _interopRequireDefault(_problembar);
 
-	var _sidebar = __webpack_require__(217);
+	var _sidebar = __webpack_require__(218);
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 
-	var _editor = __webpack_require__(218);
+	var _editor = __webpack_require__(219);
 
 	var _editor2 = _interopRequireDefault(_editor);
 
-	var _WebSocketConnection = __webpack_require__(219);
+	var _WebSocketConnection = __webpack_require__(220);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
 
 	var _player = __webpack_require__(211);
 
-	var _round = __webpack_require__(220);
+	var _round = __webpack_require__(213);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -102,9 +102,10 @@
 	_store2.default.dispatch((0, _player.playerAdd)('wakeuprj'));
 
 	var round = {
-	    starttime_utc: '10:00',
-	    switch_time: '2',
-	    dead_time: '5',
+	    starttime_utc: 500,
+	    switch_time: 5,
+	    dead_time: 5,
+	    time_limit: 100,
 	    player_ordering: ['Thi', 'Nik', 'FistOfHit', 'wakeuprj'],
 	    problem: 'Sort a list!',
 	    test_cases: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
@@ -113,7 +114,7 @@
 	_store2.default.dispatch((0, _round.startRound)(round));
 
 	setInterval(function () {
-	    return _store2.default.dispatch((0, _round.nextPlayer)());
+	    return _store2.default.dispatch((0, _round.timeTick)());
 	}, 1000);
 
 	var App = function (_Component) {
@@ -23317,7 +23318,7 @@
 
 	var _reducers = __webpack_require__(207);
 
-	var _WebSockets = __webpack_require__(213);
+	var _WebSockets = __webpack_require__(214);
 
 	var _WebSockets2 = _interopRequireDefault(_WebSockets);
 
@@ -23502,51 +23503,91 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 	exports.default = roundReducer;
 
-	var _round = __webpack_require__(220);
+	var _round = __webpack_require__(213);
 
 	var actions = _interopRequireWildcard(_round);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function roundReducer() {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-	  var action = arguments[1];
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	    var action = arguments[1];
 
-	  switch (action.type) {
-	    case actions.START_ROUND:
-	      return Object.assign({}, state, {
-	        starttime_utc: action.round.starttime_utc,
-	        switch_time: action.round.switch_time,
-	        dead_time: action.round.dead_time,
-	        player_ordering: action.round.player_ordering,
-	        problem: action.round.problem,
-	        test_cases: action.round.test_cases
-	      });
+	    switch (action.type) {
+	        case actions.START_ROUND:
+	            return Object.assign({}, state, {
+	                starttime_utc: action.round.starttime_utc,
+	                time_limit: action.round.time_limit,
+	                switch_time: action.round.switch_time,
+	                dead_time: action.round.dead_time,
+	                player_ordering: action.round.player_ordering,
+	                problem: action.round.problem,
+	                test_cases: action.round.test_cases,
 
-	    case actions.NEXT_PLAYER:
-	      var player_order = state.player_ordering.slice();
-	      player_order.push(player_order.shift());
+	                current_time: action.round.time_limit,
+	                is_switch_time: true
+	            });
 
-	      return Object.assign({}, state, {
-	        starttime_utc: state.starttime_utc,
-	        switch_time: state.switch_time,
-	        dead_time: state.dead_time,
-	        problem: state.problem,
-	        test_cases: state.test_cases,
-	        player_ordering: player_order
-	      });
+	        case actions.TIME_TICK:
+	            var newtime = state.current_time - 1;
+	            var diff = state.time_limit - newtime;
+	            var newswitchflag = state.is_switch_time;
+	            var player_order = state.player_ordering.slice();
 
-	    default:
-	      return state;
-	  }
+	            if (newswitchflag && diff % state.switch_time == 0) {
+	                newswitchflag = false;
+	                player_order.push(player_order.shift());
+	            } else if (!newswitchflag && diff % (state.switch_time + state.dead_time) == 0) {
+	                newswitchflag = true;
+	                //next player can now write
+	            }
+
+	            return Object.assign({}, state, {
+	                starttime_utc: state.starttime_utc,
+	                time_limit: state.time_limit,
+	                switch_time: state.switch_time,
+	                dead_time: state.dead_time,
+	                problem: state.problem,
+	                test_cases: state.test_cases,
+	                player_ordering: player_order,
+
+	                current_time: newtime,
+	                is_switch_time: newswitchflag
+	            });
+
+	        default:
+	            return state;
+	    }
 	}
 
 /***/ }),
 /* 213 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var START_ROUND = exports.START_ROUND = "START_ROUND";
+	var TIME_TICK = exports.TIME_TICK = "TIME_TICK";
+
+	var startRound = exports.startRound = function startRound(round) {
+	    return { type: START_ROUND,
+	        round: round
+	    };
+	};
+
+	var timeTick = exports.timeTick = function timeTick() {
+	    return { type: TIME_TICK };
+	};
+
+/***/ }),
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23559,7 +23600,7 @@
 
 	var client_actions = _interopRequireWildcard(_WSClientActions);
 
-	var _WSServerActions = __webpack_require__(214);
+	var _WSServerActions = __webpack_require__(215);
 
 	var server_actions = _interopRequireWildcard(_WSServerActions);
 
@@ -23659,7 +23700,7 @@
 	exports.default = socketMiddleware;
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -23674,7 +23715,7 @@
 	};
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23711,6 +23752,13 @@
 	    _createClass(PlayerList, [{
 	        key: 'render',
 	        value: function render() {
+	            var player_sidebar_limit = 10;
+	            var player_buttons = [];
+
+	            for (var i = 0; i < player_sidebar_limit; i++) {
+	                player_buttons.push(this.props.players[i % this.props.players.length]);
+	            }
+
 	            return _react2.default.createElement(
 	                'div',
 	                null,
@@ -23724,7 +23772,7 @@
 	                    null,
 
 	                    //TODO: make this into buttons or sth
-	                    this.props.players.map(function (data, i) {
+	                    player_buttons.map(function (data, i) {
 	                        return _react2.default.createElement(
 	                            'button',
 	                            { id: 'player-button', type: 'button', className: 'btn btn-primary', key: i },
@@ -23750,7 +23798,7 @@
 	exports.default = ActivePlayerList;
 
 /***/ }),
-/* 216 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23817,7 +23865,7 @@
 	exports.default = ActiveProblemBar;
 
 /***/ }),
-/* 217 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23854,6 +23902,12 @@
 	    _createClass(Sidebar, [{
 	        key: 'render',
 	        value: function render() {
+	            var current_player = this.props.player_ordering[0];
+	            if (this.props.is_switch_time) {
+	                var message = "It's " + current_player + "'s turn!";
+	            } else {
+	                var message = "Get ready, " + current_player + "!";
+	            }
 	            return _react2.default.createElement(
 	                'div',
 	                null,
@@ -23902,17 +23956,23 @@
 	                    _react2.default.createElement(
 	                        'p',
 	                        { id: 'clock-text' },
-	                        'starttime ',
-	                        this.props.starttime_utc,
-	                        ' ',
-	                        _react2.default.createElement('br', null),
-	                        'switchtime ',
-	                        this.props.switch_time,
-	                        ' ',
-	                        _react2.default.createElement('br', null),
-	                        'deadtime ',
-	                        this.props.dead_time
-	                    )
+	                        this.props.current_time,
+	                        '/',
+	                        this.props.time_limit
+	                    ),
+	                    message,
+	                    ' ',
+	                    _react2.default.createElement('br', null),
+	                    'starttime ',
+	                    this.props.starttime_utc,
+	                    ' ',
+	                    _react2.default.createElement('br', null),
+	                    'switchtime ',
+	                    this.props.switch_time,
+	                    ' ',
+	                    _react2.default.createElement('br', null),
+	                    'deadtime ',
+	                    this.props.dead_time
 	                )
 	            );
 	        }
@@ -23924,11 +23984,14 @@
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
 	        starttime_utc: state.round.starttime_utc,
+	        time_limit: state.round.time_limit,
+	        current_time: state.round.current_time,
 	        switch_time: state.round.switch_time,
 	        dead_time: state.round.dead_time,
 	        player_ordering: state.round.player_ordering,
 	        problem: state.round.problem,
-	        test_cases: state.round.test_cases
+	        test_cases: state.round.test_cases,
+	        is_switch_time: state.round.is_switch_time
 	    };
 	};
 
@@ -23937,7 +24000,7 @@
 	exports.default = ActiveSidebar;
 
 /***/ }),
-/* 218 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23984,7 +24047,7 @@
 	exports.default = Editor;
 
 /***/ }),
-/* 219 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24053,28 +24116,6 @@
 	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
-
-/***/ }),
-/* 220 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var START_ROUND = exports.START_ROUND = "START_ROUND";
-	var NEXT_PLAYER = exports.NEXT_PLAYER = "NEXT_PLAYER";
-
-	var startRound = exports.startRound = function startRound(round) {
-	    return { type: START_ROUND,
-	        round: round
-	    };
-	};
-
-	var nextPlayer = exports.nextPlayer = function nextPlayer() {
-	    return { type: NEXT_PLAYER };
-	};
 
 /***/ })
 /******/ ]);

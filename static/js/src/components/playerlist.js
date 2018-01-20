@@ -7,13 +7,20 @@ class PlayerList extends Component {
     }
 
     render() {
+        const player_sidebar_limit = 10;
+        let player_buttons = []
+
+        for (let i = 0; i < player_sidebar_limit; i++) {
+            player_buttons.push(this.props.players[i % this.props.players.length])
+        }
+
         return (
         <div>
             <h2 id="players-tag">Players</h2>
             <ul>
                 {
                     //TODO: make this into buttons or sth
-                    this.props.players.map(function(data, i) {
+                    player_buttons.map(function(data, i) {
                         return <button id="player-button" type="button" className="btn btn-primary" key={i}>{data}</button>
                     })
                 }

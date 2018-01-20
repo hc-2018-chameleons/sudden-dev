@@ -7,6 +7,12 @@ class Sidebar extends Component {
     }
 
     render() {
+        var current_player = this.props.player_ordering[0];
+        if (this.props.is_switch_time) {
+            var message = "It's " + current_player + "'s turn!"
+        } else {
+            var message = "Get ready, " + current_player + "!"
+        }
         return (
         <div>
           <h2 id="others-tag">Other stuff</h2>
@@ -31,10 +37,12 @@ class Sidebar extends Component {
           <div id="turn-duration">
 
           <p id="clock-text">
+            {this.props.current_time}/{this.props.time_limit}
+          </p>
+            {message} <br/>
             starttime {this.props.starttime_utc} <br/>
             switchtime {this.props.switch_time} <br/>
             deadtime {this.props.dead_time}
-          </p>
 
             </div>
         </div>
@@ -44,11 +52,14 @@ class Sidebar extends Component {
 
 const mapStateToProps = (state) => ({
     starttime_utc : state.round.starttime_utc,
+    time_limit : state.round.time_limit,
+    current_time : state.round.current_time,
     switch_time : state.round.switch_time,
     dead_time : state.round.dead_time,
     player_ordering : state.round.player_ordering,
     problem : state.round.problem,
     test_cases : state.round.test_cases,
+    is_switch_time : state.round.is_switch_time,
 });
 
 const ActiveSidebar = connect(

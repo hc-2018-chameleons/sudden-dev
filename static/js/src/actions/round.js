@@ -1,5 +1,5 @@
 export const START_ROUND = "START_ROUND";
-export const NEXT_PLAYER = "NEXT_PLAYER";
+export const TIME_TICK = "TIME_TICK";
 
 export const startRound = (round) => {
     return { type: START_ROUND,
@@ -7,6 +7,6 @@ export const startRound = (round) => {
     };
 };
 
-export const nextPlayer = () => {
-    return { type: NEXT_PLAYER };
+export const timeTick = () => {
+    return { type: TIME_TICK };
 };
