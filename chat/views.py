@@ -6,7 +6,7 @@ import haikunator
 from .models import Room
 
 def about(request):
-    return render(request, "index.html")
+    return render(request, "about.html")
 
 def new_room(request):
     """
@@ -32,10 +32,6 @@ def chat_room(request, label):
     # upon first visit (a la etherpad).
     room, created = Room.objects.get_or_create(label=label)
 
-    # We want to show the last 50 messages, ordered most-recent-last
-    messages = reversed(room.messages.order_by('-timestamp')[:50])
-
-    return render(request, "chat/room.html", {
+    return render(request, "index.html", {
         'room': room,
-        'messages': messages,
     })

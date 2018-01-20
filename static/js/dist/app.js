@@ -66,6 +66,10 @@
 
 	var _playerlist2 = _interopRequireDefault(_playerlist);
 
+	var _problembar = __webpack_require__(220);
+
+	var _problembar2 = _interopRequireDefault(_problembar);
+
 	var _sidebar = __webpack_require__(216);
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
@@ -80,6 +84,8 @@
 
 	var _player = __webpack_require__(211);
 
+	var _round = __webpack_require__(218);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -90,52 +96,67 @@
 
 	var rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
-	_store2.default.dispatch((0, _player.playerAdd)('asdfasdf'));
+	_store2.default.dispatch((0, _player.playerAdd)('Thi'));
+	_store2.default.dispatch((0, _player.playerAdd)('Nik'));
+	_store2.default.dispatch((0, _player.playerAdd)('FistOfHit'));
+	_store2.default.dispatch((0, _player.playerAdd)('wakeuprj'));
+
+	var round = {
+	    starttime_utc: '10:00',
+	    switch_time: '2',
+	    dead_time: '5',
+	    player_ordering: ['Thi', 'Nik', 'FistOfHit', 'wakeuprj'],
+	    problem: 'Sort a list!',
+	    test_cases: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
+	};
+
+	_store2.default.dispatch((0, _round.startRound)(round));
 
 	var App = function (_Component) {
-	  _inherits(App, _Component);
+	    _inherits(App, _Component);
 
-	  function App() {
-	    _classCallCheck(this, App);
+	    function App() {
+	        _classCallCheck(this, App);
 
-	    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
-	  }
-
-	  _createClass(App, [{
-	    key: "render",
-	    value: function render() {
-	      return _react2.default.createElement(
-	        "div",
-	        { id: "main" },
-	        _react2.default.createElement(
-	          "div",
-	          { id: "players-sidebar" },
-	          _react2.default.createElement(_playerlist2.default, null)
-	        ),
-	        _react2.default.createElement(_editor2.default, null),
-	        _react2.default.createElement(
-	          "div",
-	          { id: "others-sidebar" },
-	          _react2.default.createElement(_sidebar2.default, null)
-	        )
-	      );
+	        return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
 	    }
-	  }]);
 
-	  return App;
+	    _createClass(App, [{
+	        key: "render",
+	        value: function render() {
+	            return _react2.default.createElement(
+	                "div",
+	                { id: "main" },
+	                _react2.default.createElement(_problembar2.default, null),
+	                _react2.default.createElement(
+	                    "div",
+	                    { id: "players-sidebar" },
+	                    _react2.default.createElement(_playerlist2.default, null)
+	                ),
+	                _react2.default.createElement(_editor2.default, null),
+	                _react2.default.createElement(
+	                    "div",
+	                    { id: "others-sidebar" },
+	                    _react2.default.createElement(_sidebar2.default, null)
+	                )
+	            );
+	        }
+	    }]);
+
+	    return App;
 	}(_react.Component);
 
 	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 	var chatsock = ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname;
 
 	_reactDom2.default.render(_react2.default.createElement(
-	  _reactRedux.Provider,
-	  { store: _store2.default },
-	  _react2.default.createElement(
-	    _WebSocketConnection2.default,
-	    { host: chatsock, autoconnect: true },
-	    _react2.default.createElement(App, null)
-	  )
+	    _reactRedux.Provider,
+	    { store: _store2.default },
+	    _react2.default.createElement(
+	        _WebSocketConnection2.default,
+	        { host: chatsock, autoconnect: true },
+	        _react2.default.createElement(App, null)
+	    )
 	), rootElement);
 
 /***/ }),
@@ -23328,11 +23349,16 @@
 
 	var _player2 = _interopRequireDefault(_player);
 
+	var _round = __webpack_require__(219);
+
+	var _round2 = _interopRequireDefault(_round);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var reducers = exports.reducers = (0, _redux.combineReducers)({
 	  ws: _WebSockets2.default,
-	  players: _player2.default
+	  players: _player2.default,
+	  round: _round2.default
 	});
 
 /***/ }),
@@ -23629,10 +23655,7 @@
 	    function PlayerList(props) {
 	        _classCallCheck(this, PlayerList);
 
-	        var _this = _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
-
-	        console.log(props.players);
-	        return _this;
+	        return _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
 	    }
 
 	    _createClass(PlayerList, [{
@@ -23794,14 +23817,33 @@
 	                    'Other stuff'
 	                ),
 	                _react2.default.createElement(
-	                    'button',
-	                    { id: 'player-button', type: 'button', className: 'btn btn-warning' },
-	                    'see other players lines1'
+	                    'h2',
+	                    { id: 'test-cases-tag' },
+	                    'Test Cases'
 	                ),
 	                _react2.default.createElement(
-	                    'button',
-	                    { id: 'player-button', type: 'button', className: 'btn btn-warning' },
-	                    'see other players lines2'
+	                    'ul',
+	                    null,
+	                    this.props.test_cases.map(function (data, i) {
+	                        return _react2.default.createElement(
+	                            'button',
+	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
+	                            data
+	                        );
+	                    })
+	                ),
+	                _react2.default.createElement(
+	                    'ul',
+	                    null,
+	                    this.props.player_ordering.map(function (data, i) {
+	                        return _react2.default.createElement(
+	                            'button',
+	                            { id: 'player-button', type: 'button', className: 'btn btn-warning', key: i },
+	                            'See ',
+	                            data,
+	                            '\'s code'
+	                        );
+	                    })
 	                ),
 	                _react2.default.createElement(
 	                    'button',
@@ -23814,7 +23856,16 @@
 	                    _react2.default.createElement(
 	                        'p',
 	                        { id: 'clock-text' },
-	                        'clock here?'
+	                        'starttime ',
+	                        this.props.starttime_utc,
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'switchtime ',
+	                        this.props.switch_time,
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'deadtime ',
+	                        this.props.dead_time
 	                    )
 	                )
 	            );
@@ -23824,7 +23875,20 @@
 	    return Sidebar;
 	}(_react.Component);
 
-	exports.default = Sidebar;
+	var mapStateToProps = function mapStateToProps(state) {
+	    return {
+	        starttime_utc: state.round.starttime_utc,
+	        switch_time: state.round.switch_time,
+	        dead_time: state.round.dead_time,
+	        player_ordering: state.round.player_ordering,
+	        problem: state.round.problem,
+	        test_cases: state.round.test_cases
+	    };
+	};
+
+	var ActiveSidebar = (0, _reactRedux.connect)(mapStateToProps, null)(Sidebar);
+
+	exports.default = ActiveSidebar;
 
 /***/ }),
 /* 217 */
@@ -23872,6 +23936,127 @@
 	}(_react.Component);
 
 	exports.default = Editor;
+
+/***/ }),
+/* 218 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var START_ROUND = exports.START_ROUND = "START_ROUND";
+
+	var startRound = exports.startRound = function startRound(round) {
+	    return { type: START_ROUND,
+	        round: round
+	    };
+	};
+
+/***/ }),
+/* 219 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = roundReducer;
+
+	var _round = __webpack_require__(218);
+
+	var actions = _interopRequireWildcard(_round);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function roundReducer() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case actions.START_ROUND:
+	      return Object.assign({}, state, {
+	        starttime_utc: action.round.starttime_utc,
+	        switch_time: action.round.switch_time,
+	        dead_time: action.round.dead_time,
+	        player_ordering: action.round.player_ordering,
+	        problem: action.round.problem,
+	        test_cases: action.round.test_cases
+	      });
+
+	    default:
+	      return state;
+	  }
+	}
+
+/***/ }),
+/* 220 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(159);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ProblemBar = function (_Component) {
+	    _inherits(ProblemBar, _Component);
+
+	    function ProblemBar(props) {
+	        _classCallCheck(this, ProblemBar);
+
+	        var _this = _possibleConstructorReturn(this, (ProblemBar.__proto__ || Object.getPrototypeOf(ProblemBar)).call(this, props));
+
+	        console.log(props);
+	        return _this;
+	    }
+
+	    _createClass(ProblemBar, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                    'h2',
+	                    { id: 'problem-bar' },
+	                    'Current Problem: ',
+	                    this.props.problem
+	                )
+	            );
+	        }
+	    }]);
+
+	    return ProblemBar;
+	}(_react.Component);
+
+	var mapStateToProps = function mapStateToProps(state) {
+	    return {
+	        problem: state.round.problem
+	    };
+	};
+
+	var ActiveProblemBar = (0, _reactRedux.connect)(mapStateToProps, null)(ProblemBar);
+
+	exports.default = ActiveProblemBar;
 
 /***/ })
 /******/ ]);
