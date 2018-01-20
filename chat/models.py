@@ -10,8 +10,8 @@ class Question(models.Model):
 
 class TestCase(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    test_input = models.BinaryField(default=b'')
-    expected_output = models.BinaryField(default=b'')
+    test_input = models.CharField(max_length=200)
+    expected_output = models.CharField(max_length=200)
 
 class Room(models.Model):
     name = models.TextField()
