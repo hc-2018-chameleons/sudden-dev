@@ -2,10 +2,8 @@
 {% load staticfiles %}
 
 {% block content %}
-<div id="test1-container"></div>
-<div id="test2-container"></div>
-<script type="text/javascript" src="{%  static  "js/dist/test1.js"  %}"></script>
-<script type="text/javascript" src="{%  static  "js/dist/test2.js"  %}"></script>
+<div id="app" style="height:500px"></div>
+<script src="{%  static  "js/dist/app.js"  %}" data-container="#app"></script>
 
 <div id="firepad"></div>
 <script>

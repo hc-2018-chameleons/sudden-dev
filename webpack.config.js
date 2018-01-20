@@ -3,8 +3,7 @@ var baseDir = __dirname + '/core/static/js';
 module.exports = {
   context: baseDir + '/src',
   entry: {
-    test1: './test1.js',
-    test2: './test2.js'
+    app: './app.js',
   },
   output: {
     path: baseDir + '/dist',
