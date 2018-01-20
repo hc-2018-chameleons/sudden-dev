@@ -14,7 +14,7 @@ class PlayerList extends Component {
                 {
                     //TODO: make this into buttons or sth
                     this.props.players.map(function(data, i) {
-                        return <button id="player-button" type="button" className="btn btn-primary" key={i}>{data.player}</button>
+                        return <button id="player-button" type="button" className="btn btn-primary" key={i}>{data}</button>
                     })
                 }
             </ul>
@@ -24,7 +24,7 @@ class PlayerList extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    players: state.players,
+    players: state.round.player_ordering,
 });
 
 const ActivePlayerList = connect(

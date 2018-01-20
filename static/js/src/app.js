@@ -8,7 +8,7 @@ import ActiveSidebar from "./components/sidebar"
 import Editor from "./components/editor"
 import WebSocketContainer from "./components/containers/WebSocketConnection";
 import {playerAdd} from './actions/player.js'
-import {startRound} from './actions/round.js'
+import {startRound, nextPlayer} from './actions/round.js'
 
 const rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
@@ -27,6 +27,8 @@ let round = {
 }
 
 store.dispatch(startRound(round));
+
+setInterval(() => store.dispatch(nextPlayer()), 1000);
 
 class App extends Component {
   render() {

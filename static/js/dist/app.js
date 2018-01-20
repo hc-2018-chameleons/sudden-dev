@@ -62,29 +62,29 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _playerlist = __webpack_require__(214);
+	var _playerlist = __webpack_require__(215);
 
 	var _playerlist2 = _interopRequireDefault(_playerlist);
 
-	var _problembar = __webpack_require__(220);
+	var _problembar = __webpack_require__(216);
 
 	var _problembar2 = _interopRequireDefault(_problembar);
 
-	var _sidebar = __webpack_require__(216);
+	var _sidebar = __webpack_require__(217);
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 
-	var _editor = __webpack_require__(217);
+	var _editor = __webpack_require__(218);
 
 	var _editor2 = _interopRequireDefault(_editor);
 
-	var _WebSocketConnection = __webpack_require__(215);
+	var _WebSocketConnection = __webpack_require__(219);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
 
 	var _player = __webpack_require__(211);
 
-	var _round = __webpack_require__(218);
+	var _round = __webpack_require__(220);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -111,6 +111,10 @@
 	};
 
 	_store2.default.dispatch((0, _round.startRound)(round));
+
+	setInterval(function () {
+	    return _store2.default.dispatch((0, _round.nextPlayer)());
+	}, 1000);
 
 	var App = function (_Component) {
 	    _inherits(App, _Component);
@@ -23313,7 +23317,7 @@
 
 	var _reducers = __webpack_require__(207);
 
-	var _WebSockets = __webpack_require__(212);
+	var _WebSockets = __webpack_require__(213);
 
 	var _WebSockets2 = _interopRequireDefault(_WebSockets);
 
@@ -23349,7 +23353,7 @@
 
 	var _player2 = _interopRequireDefault(_player);
 
-	var _round = __webpack_require__(219);
+	var _round = __webpack_require__(212);
 
 	var _round2 = _interopRequireDefault(_round);
 
@@ -23500,18 +23504,64 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.default = roundReducer;
+
+	var _round = __webpack_require__(220);
+
+	var actions = _interopRequireWildcard(_round);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function roundReducer() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case actions.START_ROUND:
+	      return Object.assign({}, state, {
+	        starttime_utc: action.round.starttime_utc,
+	        switch_time: action.round.switch_time,
+	        dead_time: action.round.dead_time,
+	        player_ordering: action.round.player_ordering,
+	        problem: action.round.problem,
+	        test_cases: action.round.test_cases
+	      });
+
+	    case actions.NEXT_PLAYER:
+	      var player_order = state.player_ordering.slice();
+	      player_order.push(player_order.shift());
+
+	      return Object.assign({}, state, {
+	        starttime_utc: state.starttime_utc,
+	        switch_time: state.switch_time,
+	        dead_time: state.dead_time,
+	        problem: state.problem,
+	        test_cases: state.test_cases,
+	        player_ordering: player_order
+	      });
+
+	    default:
+	      return state;
+	  }
+	}
+
+/***/ }),
+/* 213 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _WSClientActions = __webpack_require__(209);
 
 	var client_actions = _interopRequireWildcard(_WSClientActions);
 
-	var _WSServerActions = __webpack_require__(213);
+	var _WSServerActions = __webpack_require__(214);
 
 	var server_actions = _interopRequireWildcard(_WSServerActions);
-
-	var _player = __webpack_require__(211);
-
-	var player_actions = _interopRequireWildcard(_player);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -23609,7 +23659,7 @@
 	exports.default = socketMiddleware;
 
 /***/ }),
-/* 213 */
+/* 214 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -23624,7 +23674,7 @@
 	};
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23678,7 +23728,7 @@
 	                        return _react2.default.createElement(
 	                            'button',
 	                            { id: 'player-button', type: 'button', className: 'btn btn-primary', key: i },
-	                            data.player
+	                            data
 	                        );
 	                    })
 	                )
@@ -23691,7 +23741,7 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
-	        players: state.players
+	        players: state.round.player_ordering
 	    };
 	};
 
@@ -23700,13 +23750,13 @@
 	exports.default = ActivePlayerList;
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -23717,8 +23767,6 @@
 
 	var _reactRedux = __webpack_require__(159);
 
-	var _WSClientActions = __webpack_require__(209);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23727,51 +23775,49 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var WebSocketConnection = function (_Component) {
-	  _inherits(WebSocketConnection, _Component);
+	var ProblemBar = function (_Component) {
+	    _inherits(ProblemBar, _Component);
 
-	  function WebSocketConnection(props) {
-	    _classCallCheck(this, WebSocketConnection);
+	    function ProblemBar(props) {
+	        _classCallCheck(this, ProblemBar);
 
-	    var _this = _possibleConstructorReturn(this, (WebSocketConnection.__proto__ || Object.getPrototypeOf(WebSocketConnection)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (ProblemBar.__proto__ || Object.getPrototypeOf(ProblemBar)).call(this, props));
 
-	    _this.autoconnect = !!props.autoconnect;
-	    return _this;
-	  }
-
-	  _createClass(WebSocketConnection, [{
-	    key: "componentDidMount",
-	    value: function componentDidMount() {
-	      if (this.autoconnect) {
-	        this.props.wsConnect(this.props.host);
-	      }
+	        console.log(props);
+	        return _this;
 	    }
-	  }, {
-	    key: "render",
-	    value: function render() {
-	      return _react2.default.createElement(
-	        "div",
-	        null,
-	        this.props.children
-	      );
-	    }
-	  }]);
 
-	  return WebSocketConnection;
+	    _createClass(ProblemBar, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                    'h2',
+	                    { id: 'problem-bar' },
+	                    'Current Problem: ',
+	                    this.props.problem
+	                )
+	            );
+	        }
+	    }]);
+
+	    return ProblemBar;
 	}(_react.Component);
 
 	var mapStateToProps = function mapStateToProps(state) {
-	  return {
-	    wsEvents: state.wsReducer
-	  };
+	    return {
+	        problem: state.round.problem
+	    };
 	};
 
-	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
+	var ActiveProblemBar = (0, _reactRedux.connect)(mapStateToProps, null)(ProblemBar);
 
-	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
+	exports.default = ActiveProblemBar;
 
 /***/ }),
-/* 216 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23891,7 +23937,7 @@
 	exports.default = ActiveSidebar;
 
 /***/ }),
-/* 217 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23938,23 +23984,6 @@
 	exports.default = Editor;
 
 /***/ }),
-/* 218 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var START_ROUND = exports.START_ROUND = "START_ROUND";
-
-	var startRound = exports.startRound = function startRound(round) {
-	    return { type: START_ROUND,
-	        round: round
-	    };
-	};
-
-/***/ }),
 /* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -23962,43 +23991,6 @@
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
-	});
-	exports.default = roundReducer;
-
-	var _round = __webpack_require__(218);
-
-	var actions = _interopRequireWildcard(_round);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function roundReducer() {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-	  var action = arguments[1];
-
-	  switch (action.type) {
-	    case actions.START_ROUND:
-	      return Object.assign({}, state, {
-	        starttime_utc: action.round.starttime_utc,
-	        switch_time: action.round.switch_time,
-	        dead_time: action.round.dead_time,
-	        player_ordering: action.round.player_ordering,
-	        problem: action.round.problem,
-	        test_cases: action.round.test_cases
-	      });
-
-	    default:
-	      return state;
-	  }
-	}
-
-/***/ }),
-/* 220 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -24009,6 +24001,8 @@
 
 	var _reactRedux = __webpack_require__(159);
 
+	var _WSClientActions = __webpack_require__(209);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24017,46 +24011,70 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ProblemBar = function (_Component) {
-	    _inherits(ProblemBar, _Component);
+	var WebSocketConnection = function (_Component) {
+	  _inherits(WebSocketConnection, _Component);
 
-	    function ProblemBar(props) {
-	        _classCallCheck(this, ProblemBar);
+	  function WebSocketConnection(props) {
+	    _classCallCheck(this, WebSocketConnection);
 
-	        var _this = _possibleConstructorReturn(this, (ProblemBar.__proto__ || Object.getPrototypeOf(ProblemBar)).call(this, props));
+	    var _this = _possibleConstructorReturn(this, (WebSocketConnection.__proto__ || Object.getPrototypeOf(WebSocketConnection)).call(this, props));
 
-	        console.log(props);
-	        return _this;
+	    _this.autoconnect = !!props.autoconnect;
+	    return _this;
+	  }
+
+	  _createClass(WebSocketConnection, [{
+	    key: "componentDidMount",
+	    value: function componentDidMount() {
+	      if (this.autoconnect) {
+	        this.props.wsConnect(this.props.host);
+	      }
 	    }
+	  }, {
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "div",
+	        null,
+	        this.props.children
+	      );
+	    }
+	  }]);
 
-	    _createClass(ProblemBar, [{
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                null,
-	                _react2.default.createElement(
-	                    'h2',
-	                    { id: 'problem-bar' },
-	                    'Current Problem: ',
-	                    this.props.problem
-	                )
-	            );
-	        }
-	    }]);
-
-	    return ProblemBar;
+	  return WebSocketConnection;
 	}(_react.Component);
 
 	var mapStateToProps = function mapStateToProps(state) {
-	    return {
-	        problem: state.round.problem
+	  return {
+	    wsEvents: state.wsReducer
+	  };
+	};
+
+	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
+
+/***/ }),
+/* 220 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var START_ROUND = exports.START_ROUND = "START_ROUND";
+	var NEXT_PLAYER = exports.NEXT_PLAYER = "NEXT_PLAYER";
+
+	var startRound = exports.startRound = function startRound(round) {
+	    return { type: START_ROUND,
+	        round: round
 	    };
 	};
 
-	var ActiveProblemBar = (0, _reactRedux.connect)(mapStateToProps, null)(ProblemBar);
-
-	exports.default = ActiveProblemBar;
+	var nextPlayer = exports.nextPlayer = function nextPlayer() {
+	    return { type: NEXT_PLAYER };
+	};
 
 /***/ })
 /******/ ]);
