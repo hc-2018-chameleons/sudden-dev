@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
-class PlayerList extends Component {
+export default class PlayerList extends Component {
     constructor(props) {
         super(props);
     }
@@ -18,15 +18,3 @@ class PlayerList extends Component {
         );
     }
 }
-
-const mapStateToProps = state => {
-    return {
-        playerBar : state.playerBar
-    }
-}
-
-const VisiblePlayerList = connect(
-    mapStateToProps
-)(PlayerList)
-
-export default VisiblePlayerList
