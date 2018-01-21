@@ -42,7 +42,6 @@ export default function runit(prog, test_inputs, expected_outputs) {
             read: builtinRead
         });
         var functionCall = prog;
-        functionCall = "def func(num):\n    result = 1\n    for i in range(1, num+1):\n       result *= i\n    return result"
         functionCall = functionCall + "\n" + "print func(" + test_input + ")";
 
         (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
