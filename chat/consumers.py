@@ -96,16 +96,16 @@ def ws_receive(message):
         log.debug("ws message isn't json text=%s", text)
         return
     
-    if len(data.keys()) != 1 or data.keys()[0] not in ['player_name']:
-        log.debug("ws message unexpected format data=%s", data)
-        return
+    #if len(data.keys()) != 1 or data.keys()[0] not in ['player_name']:
+    #    log.debug("ws message unexpected format data=%s", data)
+    #    return
 
     if data:
         position = message.channel_session['position']
         log.debug('message room=%s player=%s name=%s', 
             room.label, position, data['player_name'])
 
-        player = room.player_set.filter(position=position)
+        player = room.player_set.filter(position=position).first()
         player.name = data['player_name']
         player.save()
 

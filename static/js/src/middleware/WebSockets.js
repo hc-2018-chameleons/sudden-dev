@@ -10,9 +10,18 @@ const socketMiddleware = (function () {
   /**
    * Handler for when the WebSocket opens
    */
-  const onOpen = (ws, store, host) => event => {
+  function onOpen(ws, store, host) {
     // Authenticate with Backend... somehow...
-    store.dispatch(client_actions.wsConnected(host))
+    store.dispatch(client_actions.wsConnected(host));
+    setTimeout(sendName,1000);
+  };
+
+  function sendName() {
+      name = document.cookie.match(new RegExp('name' + '=([^;]+)'))[1];
+      var message = {
+          player_name : name
+      }
+      socket.send(JSON.stringify(message));
   };
 
   /**
@@ -78,6 +87,7 @@ const socketMiddleware = (function () {
         socket.onmessage = onMessage(socket, store);
         socket.onclose = onClose(socket, store);
         socket.onopen = onOpen(socket, store, action.host);
+
 
         break;
 

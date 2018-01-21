@@ -23659,11 +23659,18 @@
 	  /**
 	   * Handler for when the WebSocket opens
 	   */
-	  var onOpen = function onOpen(ws, store, host) {
-	    return function (event) {
-	      // Authenticate with Backend... somehow...
-	      store.dispatch(client_actions.wsConnected(host));
+	  function onOpen(ws, store, host) {
+	    // Authenticate with Backend... somehow...
+	    store.dispatch(client_actions.wsConnected(host));
+	    setTimeout(sendName, 1000);
+	  };
+
+	  function sendName() {
+	    name = document.cookie.match(new RegExp('name' + '=([^;]+)'))[1];
+	    var message = {
+	      player_name: name
 	    };
+	    socket.send(JSON.stringify(message));
 	  };
 
 	  /**
