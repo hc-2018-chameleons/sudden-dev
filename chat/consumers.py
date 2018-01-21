@@ -68,7 +68,7 @@ def ws_connect(message):
                 'problem' : q.question_text,
                 'test_case_inputs' : test_case_inputs,
                 'test_case_outputs' : test_case_outputs,
-                'players' : positions
+                'player_ordering' : positions
             }
         }
 
