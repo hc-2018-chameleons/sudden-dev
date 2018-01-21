@@ -39,7 +39,7 @@ class Sidebar extends Component {
                     return <button id="player-button" type="button" className="btn btn-warning" key={i}>See {data}s code</button>
                   })
               }*/}
-              <button id="run-button" type="button" className="btn btn-danger">Run</button>
+              <button id="run-button" type="button" className="btn btn-danger" onClick={() => runit(this.state.code)}>Run</button>
           </div>
 
 
