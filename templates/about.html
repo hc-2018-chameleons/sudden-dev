@@ -11,7 +11,7 @@
   <div id="join-form">
     <form id="name-form">
     <input id="name-field">
-    <a class="button button-primary" onClick="handleNewRoom()"><button id="join-button" type="button" className="btn btn-primary">Join this room</button></a>
+    <a class="button button-primary" onClick="openExistingRoom()"><button id="join-button" type="button" className="btn btn-primary">Join this room</button></a>
     </form>
     <div id="big-or">
         OR:
@@ -22,16 +22,13 @@
   </div>
 
 
-  <!--<div id="footnote" class="quiet">
-    Or, you can visit <code>{{ request.scheme }}://{{ request.get_host }}/any-path-you-want</code>
-    to create a arbitrary room or join one whose name you know.
-</div>-->
-
   <script>
     function handleNewRoom() {
-      var name = document.getElementById('name-field').value
-      document.cookie = "name=" + name;
       window.open({% url 'new_room'%})
+    }
+
+    function openExistingRoom() {
+      window.open(window.location.href + document.getElementById('name-field').value)
     }
   </script>
 {% endblock content %}

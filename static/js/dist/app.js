@@ -23547,7 +23547,7 @@
 	            }
 	            var current_time = action.round.round.time_limit - elapsed;
 
-	            var switch_time = 5;
+	            var switch_time = 15;
 	            var dead_time = 3;
 
 	            var players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.round.time_limit, action.round.round.player_ordering);
