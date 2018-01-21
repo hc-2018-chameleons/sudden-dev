@@ -172,11 +172,18 @@ body, html {
 
 @keyframes flashBlackRed {
     0% {background-color: red; color: black}
-    16.6% {background-color: black; color: red}
+    8.3% {background-color: black; color: red}
+    16.6% {background-color: red; color: black}
+    24.9% {background-color: black; color: red}
     33.2% {background-color: red; color: black}
-    49.8% {background-color: black; color: red}
+    41.5% {background-color: black; color: red}
+    49.8% {background-color: red; color: black}
+    58.1% {background-color: black; color: red}
     66.4% {background-color: red; color: black}
-    83% {background-color: black; color: red}
+    74.7% {background-color: black; color: red}
+    83% {background-color: white; color: green}
+    88.7% {background-color: green; color: white}
+    94.4 {background-color: white; color: green}
     100% {background-color: green; color: white}
 }
 
