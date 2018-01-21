@@ -30,10 +30,13 @@ class Sidebar extends Component {
           <h2 id="test-cases-tag">Test Cases</h2>
               {
                   this.props.test_case_inputs.map(function(data, i) {
-                      return <button id="test-case" type="button" className="btn btn-primary" key={i}>Test case: {i+1}</button>
+                      return <div id="button-block">
+                      <div id="test-button" key={i}>Test case {i+1}</div>
+                      <div id="test-button" key={i}>Pass/Fail</div>
+                      </div>
                   })
               }
-          <div>
+        <div>
               {/*{
                   this.props.player_ordering.map(function(data, i) {
                     return <button id="player-button" type="button" className="btn btn-warning" key={i}>See {data}s code</button>

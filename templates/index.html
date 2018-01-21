@@ -10,6 +10,7 @@ $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$-->
 
 <link rel="stylesheet" href={% static 'style/style.css' %}>
 
+
 <div id="app"></div>
 <script src={% static 'js/dist/app.js' %} data-container="#app"></script>
 
@@ -52,7 +53,7 @@ function init() {
 
 
     // Create Firepad.
-    var firepadRef = firebase.database().ref(); 
+    var firepadRef = firebase.database().ref();
     console.log(firepadRef);
     //var path = window.location.pathname;
     //var path_truncated = path.substring(1, path.length - 1);
