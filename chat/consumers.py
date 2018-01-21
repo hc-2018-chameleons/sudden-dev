@@ -1,9 +1,11 @@
 import re
 import json
 import logging
+import time
+import calendar
 from channels import Group
 from channels.sessions import channel_session
-from .models import Room
+from .models import Room, Player
 
 log = logging.getLogger(__name__)
 
@@ -29,11 +31,43 @@ def ws_connect(message):
     log.debug('chat connect room=%s client=%s:%s', 
         room.label, message['client'][0], message['client'][1])
     
+    room.capacity -= 1
+    room.save()
+
     # Need to be explicit about the channel layer so that testability works
     # This may be a FIXME?
     Group('chat-'+label, channel_layer=message.channel_layer).add(message.reply_channel)
 
     message.channel_session['room'] = room.label
+    player = Player.objects.create(room=room, position=room.capacity)
+    room.player_set.add(player)
+    room.save()
+
+    message.channel_session['position'] = player.position
+    message.reply_channel.send({
+        "text": json.dumps({'you': player.position})
+    })
+    send_players_update(room, Group('chat-'+label, channel_layer=message.channel_layer))
+
+    if room.capacity == 0:
+        q = Question.random()
+
+        test_case_inputs = []
+        test_case_outputs = []
+        for test_case in q.test_case_set.all():
+            test_case_inputs.append(test_case.test_input)
+            test_case_outputs.append(test_case.expected_output)
+
+        round_json = {
+            'round' : {
+                'starttime_utc' : calendar.timegm(time.gmtime()) + 5,
+                'time_limit': q.time_limit_seconds,
+                'problem' : q.question_text,
+                'test_case_inputs' : test_case_inputs,
+                'test_case_outputs' : test_case_outputs
+            }
+        }
+        Group('chat-'+label, channel_layer=message.channel_layer).send({'text': json.dumps()})
 
 @channel_session
 def ws_receive(message):
@@ -56,17 +90,21 @@ def ws_receive(message):
         log.debug("ws message isn't json text=%s", text)
         return
     
-    if set(data.keys()) != set(('handle', 'message')):
+    if len(data.keys()) != 1 or data.keys()[0] not in ['player_name']:
         log.debug("ws message unexpected format data=%s", data)
         return
 
     if data:
-        log.debug('chat message room=%s handle=%s message=%s', 
-            room.label, data['handle'], data['message'])
-        m = room.messages.create(**data)
+        position = message.channel_session['position']
+        log.debug('message room=%s player=%s name=%s', 
+            room.label, position, data['player_name'])
 
-        # See above for the note about Group
-        Group('chat-'+label, channel_layer=message.channel_layer).send({'text': json.dumps(m.as_dict())})
+        player = room.player_set.filter(position=position)
+        player.name = data['player_name']
+        player.save()
+
+        send_players_update(room, Group('chat-'+label, channel_layer=message.channel_layer))
+
 
 @channel_session
 def ws_disconnect(message):
@@ -76,3 +114,16 @@ def ws_disconnect(message):
         Group('chat-'+label, channel_layer=message.channel_layer).discard(message.reply_channel)
     except (KeyError, Room.DoesNotExist):
         pass
+
+def send_players_update(room, group):
+    players_dict = {}
+    for player in room.player_set.all():
+        name = player.name if player.name is not None else ""
+        players_dict[player.position] = name
+
+    message_dict = {}
+    message_dict['players'] = players_dict
+    group.send({'text': json.dumps(players_dict)})
+
+
+
