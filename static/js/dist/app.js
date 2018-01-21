@@ -24253,6 +24253,7 @@
 	        }, function (err) {
 	            console.log("Program didn't compile!");
 	            console.log(err.toString());
+	            document.getElementById('error-box').innerHTML = err.toString();
 	            test_failed_callback();
 	        });
 	    }
@@ -24317,7 +24318,16 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            return _react2.default.createElement('div', { id: 'firepad', ref: 'root' });
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement('div', { id: 'firepad', ref: 'root' }),
+	                _react2.default.createElement(
+	                    'div',
+	                    { id: 'error-box' },
+	                    '(Errors show here)'
+	                )
+	            );
 	        }
 	    }]);
 

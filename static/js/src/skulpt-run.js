@@ -59,6 +59,7 @@ export default function runit(prog, test_inputs, expected_outputs) {
             function(err) {
                 console.log("Program didn't compile!")
                 console.log(err.toString());
+                document.getElementById('error-box').innerHTML=err.toString();
                 test_failed_callback();
             });
     }
