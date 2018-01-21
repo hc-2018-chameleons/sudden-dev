@@ -25,6 +25,9 @@ class Sidebar extends Component {
             } else {
                 var message = "Get ready, " + current_player + "!"
                 }
+        if (this.props.results) {
+            var test_message = this.props.results.passed + " passed, " + this.props.results.failed + " failed."
+        }
         return (
             <div>
             <h2 id="test-cases-tag">Test Cases</h2>
@@ -33,6 +36,7 @@ class Sidebar extends Component {
                         return <button id="test-case" type="button" className="btn btn-primary" key={i}>Test case: {i+1}</button>
                     }.bind(this))
                 }
+            <div>{test_message}</div>
             <div>
                 {/*{
                     this.props.player_ordering.map(function(data, i) {
@@ -75,6 +79,7 @@ const mapStateToProps = (state) => ({
     test_case_inputs : state.round.test_case_inputs,
     test_case_outputs : state.round.test_case_outputs,
     is_switch_time : state.round.is_switch_time,
+    results : state.round.results,
 
     players : state.players.players.players,
     you : state.players.you

@@ -75,9 +75,26 @@ export default function roundReducer(state = [], action) {
           test_case_inputs : state.test_case_inputs,
           test_case_outputs : state.test_case_outputs,
           player_ordering : player_order,
+          results : state.results,
 
           current_time : newtime,
           is_switch_time : newswitchflag
+      })
+
+    case actions.RESULTS:
+      return Object.assign({}, state, {
+          starttime_utc : state.starttime_utc,
+          time_limit : state.time_limit,
+          switch_time : state.switch_time,
+          dead_time : state.dead_time,
+          problem : state.problem,
+          test_case_inputs : state.test_case_inputs,
+          test_case_outputs : state.test_case_outputs,
+          player_ordering : state.player_ordering,
+          current_time : state.current_time,
+          is_switch_time : state.is_switch_time,
+
+          results : action.results,
       })
 
     default:

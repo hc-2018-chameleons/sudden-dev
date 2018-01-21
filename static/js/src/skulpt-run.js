@@ -1,5 +1,7 @@
 document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
 document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
+import store from "./store"
+import {testResults} from "./actions/round"
 
 function builtinRead(x) {
     if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
@@ -15,6 +17,7 @@ export default function runit(prog, test_inputs, expected_outputs) {
         if (tests_failed + tests_passed >= test_inputs.length) {
             console.log("TESTS FAILED: " + tests_failed);
             console.log("TESTS PASSED: " + tests_passed);
+            store.dispatch(testResults({passed:tests_passed, failed:tests_failed}));
         }
     };
     var test_passed_callback = function() {
@@ -22,6 +25,7 @@ export default function runit(prog, test_inputs, expected_outputs) {
         if (tests_failed + tests_passed >= test_inputs.length) {
             console.log("TESTS FAILED: " + tests_failed);
             console.log("TESTS PASSED: " + tests_passed);
+            store.dispatch(testResults({passed:tests_passed, failed:tests_failed}));
         }
     };
     for (var i = 0; i < test_inputs.length; i++) {
@@ -34,6 +38,7 @@ export default function runit(prog, test_inputs, expected_outputs) {
             if (text == expected_output) {
                 test_passed_callback();
             } else {
+                console.log("FAIL: Expected " + expected_output + ", got " + text);
                 test_failed_callback();
             }
         };

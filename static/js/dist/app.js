@@ -23597,9 +23597,26 @@
 	                test_case_inputs: state.test_case_inputs,
 	                test_case_outputs: state.test_case_outputs,
 	                player_ordering: player_order,
+	                results: state.results,
 
 	                current_time: newtime,
 	                is_switch_time: newswitchflag
+	            });
+
+	        case actions.RESULTS:
+	            return Object.assign({}, state, {
+	                starttime_utc: state.starttime_utc,
+	                time_limit: state.time_limit,
+	                switch_time: state.switch_time,
+	                dead_time: state.dead_time,
+	                problem: state.problem,
+	                test_case_inputs: state.test_case_inputs,
+	                test_case_outputs: state.test_case_outputs,
+	                player_ordering: state.player_ordering,
+	                current_time: state.current_time,
+	                is_switch_time: state.is_switch_time,
+
+	                results: action.results
 	            });
 
 	        default:
@@ -23618,6 +23635,7 @@
 	});
 	var START_ROUND = exports.START_ROUND = "START_ROUND";
 	var TIME_TICK = exports.TIME_TICK = "TIME_TICK";
+	var RESULTS = exports.RESULTS = "RESULTS";
 
 	var startRound = exports.startRound = function startRound(round) {
 	    return { type: START_ROUND,
@@ -23627,6 +23645,10 @@
 
 	var timeTick = exports.timeTick = function timeTick() {
 	    return { type: TIME_TICK };
+	};
+
+	var testResults = exports.testResults = function testResults(results) {
+	    return { type: RESULTS, results: results };
 	};
 
 /***/ }),
@@ -24022,6 +24044,9 @@
 	                } else {
 	                    var message = "Get ready, " + current_player + "!";
 	                }
+	                if (this.props.results) {
+	                    var test_message = this.props.results.passed + " passed, " + this.props.results.failed + " failed.";
+	                }
 	                return _react2.default.createElement(
 	                    'div',
 	                    null,
@@ -24038,6 +24063,11 @@
 	                            i + 1
 	                        );
 	                    }.bind(this)),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        test_message
+	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        null,
@@ -24101,6 +24131,7 @@
 	        test_case_inputs: state.round.test_case_inputs,
 	        test_case_outputs: state.round.test_case_outputs,
 	        is_switch_time: state.round.is_switch_time,
+	        results: state.round.results,
 
 	        players: state.players.players.players,
 	        you: state.players.you
@@ -24113,7 +24144,7 @@
 
 /***/ }),
 /* 219 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -24121,8 +24152,18 @@
 	    value: true
 	});
 	exports.default = runit;
+
+	var _store = __webpack_require__(206);
+
+	var _store2 = _interopRequireDefault(_store);
+
+	var _round = __webpack_require__(213);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
 	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
+
 
 	function builtinRead(x) {
 	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
@@ -24137,6 +24178,7 @@
 	        if (tests_failed + tests_passed >= test_inputs.length) {
 	            console.log("TESTS FAILED: " + tests_failed);
 	            console.log("TESTS PASSED: " + tests_passed);
+	            _store2.default.dispatch((0, _round.testResults)({ passed: tests_passed, failed: tests_failed }));
 	        }
 	    };
 	    var test_passed_callback = function test_passed_callback() {
@@ -24144,6 +24186,7 @@
 	        if (tests_failed + tests_passed >= test_inputs.length) {
 	            console.log("TESTS FAILED: " + tests_failed);
 	            console.log("TESTS PASSED: " + tests_passed);
+	            _store2.default.dispatch((0, _round.testResults)({ passed: tests_passed, failed: tests_failed }));
 	        }
 	    };
 	    for (var i = 0; i < test_inputs.length; i++) {
@@ -24156,6 +24199,7 @@
 	            if (text == expected_output) {
 	                test_passed_callback();
 	            } else {
+	                console.log("FAIL: Expected " + expected_output + ", got " + text);
 	                test_failed_callback();
 	            }
 	        };
