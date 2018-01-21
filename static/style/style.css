@@ -342,3 +342,10 @@ body, html {
 #name-field {
     color: black;
 }
+
+#error-box {
+    position: absolute;
+    bottom: 0;
+    padding-left: 30%;
+    color: red;
+}

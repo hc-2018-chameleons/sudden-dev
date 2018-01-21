@@ -25,7 +25,10 @@ class BaseEditor extends Component {
 
     render() {
         return (
+            <div>
             <div id="firepad" ref="root"></div>
+            <div id="error-box">(Errors show here)</div>
+            </div>
         );
     }
 }
