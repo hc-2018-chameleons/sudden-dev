@@ -100,9 +100,8 @@
 	_store2.default.dispatch((0, _player.playerAdd)('Nik'));
 	_store2.default.dispatch((0, _player.playerAdd)('FistOfHit'));
 	_store2.default.dispatch((0, _player.playerAdd)('wakeuprj'));
-
 	var round = {
-	    starttime_utc: 500,
+	    starttime_utc: new Date().getTime(),
 	    switch_time: 5,
 	    dead_time: 5,
 	    time_limit: 100,
@@ -23513,36 +23512,66 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+	// Synchronize player order list
+	function shiftPlayerList(elapsed, action) {
+	    var sw_time = action.round.switch_time;
+	    var d_time = action.round.dead_time;
+	    var no_of_turns = Math.floor(action.round.time_limit / (sw_time + d_time));
+
+	    var cur_turn = Math.floor(elapsed / action.round.time_limit * no_of_turns);
+	    var cur_player = cur_turn % action.round.player_ordering.length;
+
+	    var players = action.round.player_ordering;
+	    for (var i = 0; i < cur_player; i++) {
+	        players.push(players.shift());
+	    }
+
+	    return players;
+	}
+
 	function roundReducer() {
 	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	    var action = arguments[1];
 
 	    switch (action.type) {
 	        case actions.START_ROUND:
+	            var utc = new Date().getTime();
+	            var elapsed = utc - action.round.starttime_utc;
+	            var current_time = action.round.time_limit - elapsed;
+
+	            var players = shiftPlayerList(elapsed, action);
+
+	            var turn_time = elapsed % (action.round.switch_time + action.round.dead_time);
+	            var is_sw_time = turn_time >= action.round.dead_time;
+
 	            return Object.assign({}, state, {
 	                starttime_utc: action.round.starttime_utc,
 	                time_limit: action.round.time_limit,
 	                switch_time: action.round.switch_time,
 	                dead_time: action.round.dead_time,
-	                player_ordering: action.round.player_ordering,
+	                player_ordering: players,
 	                problem: action.round.problem,
 	                test_cases: action.round.test_cases,
 
-	                current_time: action.round.time_limit,
-	                is_switch_time: true
+	                current_time: current_time,
+	                is_switch_time: is_sw_time
 	            });
 
 	        case actions.TIME_TICK:
+	            //quick dirty hack nobody needs to know
+	            if (state.current_time <= 0) {
+	                return state;
+	            }
 	            var newtime = state.current_time - 1;
 	            var diff = state.time_limit - newtime;
 	            var newswitchflag = state.is_switch_time;
 	            var player_order = state.player_ordering.slice();
 
-	            if (newswitchflag && diff % state.switch_time == 0) {
+	            if (!newswitchflag && diff % state.dead_time == 0) {
+	                newswitchflag = true;
+	            } else if (newswitchflag && diff % (state.switch_time + state.dead_time) == 0) {
 	                newswitchflag = false;
 	                player_order.push(player_order.shift());
-	            } else if (!newswitchflag && diff % (state.switch_time + state.dead_time) == 0) {
-	                newswitchflag = true;
 	                //next player can now write
 	            }
 
@@ -24025,24 +24054,32 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Editor = function (_Component) {
-	    _inherits(Editor, _Component);
+	var BaseEditor = function (_Component) {
+	    _inherits(BaseEditor, _Component);
 
-	    function Editor(props) {
-	        _classCallCheck(this, Editor);
+	    function BaseEditor(props) {
+	        _classCallCheck(this, BaseEditor);
 
-	        return _possibleConstructorReturn(this, (Editor.__proto__ || Object.getPrototypeOf(Editor)).call(this, props));
+	        return _possibleConstructorReturn(this, (BaseEditor.__proto__ || Object.getPrototypeOf(BaseEditor)).call(this, props));
 	    }
 
-	    _createClass(Editor, [{
+	    _createClass(BaseEditor, [{
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement('div', { id: 'firepad' });
 	        }
 	    }]);
 
-	    return Editor;
+	    return BaseEditor;
 	}(_react.Component);
+
+	var mapStateToProps = function mapStateToProps(state) {
+	    return {
+	        players: state.round.player_ordering
+	    };
+	};
+
+	var Editor = (0, _reactRedux.connect)(mapStateToProps, null)(BaseEditor);
 
 	exports.default = Editor;
 
