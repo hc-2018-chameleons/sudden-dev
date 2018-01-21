@@ -51,8 +51,10 @@ export default function roundReducer(state = [], action) {
     case actions.TIME_TICK:
       //quick dirty hack nobody needs to know
       if (state.current_time <= 0) {
+          alert('TOO BAD YOU LOSE :((((');
           return state;
       }
+
       let newtime = state.current_time - 1;
       let diff = state.time_limit - newtime;
       let newswitchflag = state.is_switch_time;
@@ -82,6 +84,10 @@ export default function roundReducer(state = [], action) {
       })
 
     case actions.RESULTS:
+      if (action.results.failed == 0) {
+          alert('CONGRATS U WIN!!!!')
+      }
+
       return Object.assign({}, state, {
           starttime_utc : state.starttime_utc,
           time_limit : state.time_limit,

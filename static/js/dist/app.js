@@ -23506,7 +23506,7 @@
 /* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -23573,8 +23573,10 @@
 	        case actions.TIME_TICK:
 	            //quick dirty hack nobody needs to know
 	            if (state.current_time <= 0) {
+	                alert('TOO BAD YOU LOSE :((((');
 	                return state;
 	            }
+
 	            var newtime = state.current_time - 1;
 	            var diff = state.time_limit - newtime;
 	            var newswitchflag = state.is_switch_time;
@@ -23604,6 +23606,10 @@
 	            });
 
 	        case actions.RESULTS:
+	            if (action.results.failed == 0) {
+	                alert('CONGRATS U WIN!!!!');
+	            }
+
 	            return Object.assign({}, state, {
 	                starttime_utc: state.starttime_utc,
 	                time_limit: state.time_limit,
