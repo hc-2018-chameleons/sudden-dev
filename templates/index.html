@@ -43,9 +43,9 @@ function init() {
     editor.setTheme("ace/theme/clouds");
     editor.session.setMode("ace/mode/javascript");
 
-    //// Create Firepad.
+    // Create Firepad.
     var firepad = Firepad.fromACE(firepadRef, editor, {
-        defaultText: '// JavaScript Editing with Firepad!\nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'
+        defaultText: 'def func(num): \n'
     });
 }
 
