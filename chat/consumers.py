@@ -45,7 +45,7 @@ def ws_connect(message):
 
     message.channel_session['position'] = player.position
     message.reply_channel.send({
-        "text": json.dumps({'you': player.position})
+        "text": json.dumps({'you': player.position, "type": "PLAYER_YOU"})
     })
     send_players_update(room, Group('chat-'+label, channel_layer=message.channel_layer))
 
@@ -72,6 +72,7 @@ def ws_connect(message):
             }
         }
 
+        round_json['type'] = 'START_ROUND'
         Group('chat-'+label, channel_layer=message.channel_layer).send({'text': json.dumps(round_json)})
 
 @channel_session
@@ -123,6 +124,7 @@ def ws_disconnect(message):
 def send_players_update(room, group):
     message_dict = {}
     message_dict['players'] = players_update_dict(room)
+    message_dict['type'] = 'PLAYER_UPDATE'
     group.send({'text': json.dumps(message_dict)})
 
 def players_update_dict(room):

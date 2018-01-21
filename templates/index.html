@@ -28,6 +28,9 @@ $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$-->
 
 <script>
 function init() {
+    var path = window.location.pathname;
+    var path_truncated = path.substring(0, path.length - 1);
+
     // Initialize Firebase.
     var config = {
         apiKey: "AIzaSyBH4BcB5AZonEW011pWBUok3zUzC-nX940",
@@ -49,14 +52,8 @@ function init() {
     editor.setTheme("ace/theme/clouds");
     editor.session.setMode("ace/mode/python");
 
-
-
     // Create Firepad.
     var firepadRef = firebase.database().ref(); 
-    console.log(firepadRef);
-    //var path = window.location.pathname;
-    //var path_truncated = path.substring(1, path.length - 1);
-    //console.log(path_truncated);
     var firepad = Firepad.fromACE(firepadRef, editor, {
         defaultText: 'def func(num): \n'
     });
