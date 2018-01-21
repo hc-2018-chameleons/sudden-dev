@@ -24201,25 +24201,16 @@
 /* 221 */
 /***/ (function(module, exports) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	exports.default = runit;
-	var imported = document.createElement('script');
-	imported.src = 'http://www.skulpt.org/static/skulpt.min.js';
-	document.head.appendChild(imported);
-	imported = document.createElement('script');
-	// imported.src = 'http://www.skulpt.org/static/skulpt-stdlib.js';
-	// document.head.appendChild(imported);
-	// imported = document.createElement('script');
-	imported.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js';
-	document.head.appendChild(imported);
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
 	function outf(text) {
 	    console.log("Program Output: " + text);
-	    // var mypre = document.getElementById("output");
-	    // mypre.innerHTML = mypre.innerHTML + text;
 	}
 
 	function builtinRead(x) {
@@ -24228,11 +24219,7 @@
 	}
 
 	function runit(prog) {
-	    //var prog = document.getElementById("firepad"); // Get the code written by user here
 	    console.log(prog);
-	    // var mypre = document.getElementById("output");
-	    // mypre.innerHTML = '';
-	    // Sk.pre = "output";
 	    Sk.configure({
 	        output: outf,
 	        read: builtinRead
