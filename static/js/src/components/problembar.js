@@ -9,8 +9,12 @@ class ProblemBar extends Component {
 
     render() {
         return (
-        <div>
-          <h2 id="problem-bar">Current Problem: {this.props.problem}</h2>
+        <div id="problem-display">
+          <h2 id="your-task">Your Task:</h2>
+          <p id="problem-itself">
+          {this.props.problem}
+          </p>
+
         </div>
         );
     }

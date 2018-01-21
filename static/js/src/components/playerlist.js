@@ -7,7 +7,7 @@ class PlayerList extends Component {
     }
 
     render() {
-        const player_sidebar_limit = 10;
+        const player_sidebar_limit = this.props.players.length;
         let player_buttons = []
 
         for (let i = 0; i < player_sidebar_limit; i++) {

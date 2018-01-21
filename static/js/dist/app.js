@@ -23752,7 +23752,7 @@
 	    _createClass(PlayerList, [{
 	        key: 'render',
 	        value: function render() {
-	            var player_sidebar_limit = 10;
+	            var player_sidebar_limit = this.props.players.length;
 	            var player_buttons = [];
 
 	            for (var i = 0; i < player_sidebar_limit; i++) {
@@ -23840,11 +23840,15 @@
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
-	                null,
+	                { id: 'problem-display' },
 	                _react2.default.createElement(
 	                    'h2',
-	                    { id: 'problem-bar' },
-	                    'Current Problem: ',
+	                    { id: 'your-task' },
+	                    'Your Task:'
+	                ),
+	                _react2.default.createElement(
+	                    'p',
+	                    { id: 'problem-itself' },
 	                    this.props.problem
 	                )
 	            );
@@ -23913,42 +23917,32 @@
 	                null,
 	                _react2.default.createElement(
 	                    'h2',
-	                    { id: 'others-tag' },
-	                    'Other stuff'
-	                ),
-	                _react2.default.createElement(
-	                    'h2',
 	                    { id: 'test-cases-tag' },
 	                    'Test Cases'
 	                ),
-	                _react2.default.createElement(
-	                    'ul',
-	                    null,
-	                    this.props.test_cases.map(function (data, i) {
-	                        return _react2.default.createElement(
+	                this.props.test_cases.map(function (data, i) {
+
+	                    return _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        ' ',
+	                        _react2.default.createElement(
 	                            'button',
 	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
-	                            data
-	                        );
-	                    })
-	                ),
+	                            'Test case: ',
+	                            i + 1
+	                        ),
+	                        ' '
+	                    );
+	                }),
 	                _react2.default.createElement(
-	                    'ul',
+	                    'div',
 	                    null,
-	                    this.props.player_ordering.map(function (data, i) {
-	                        return _react2.default.createElement(
-	                            'button',
-	                            { id: 'player-button', type: 'button', className: 'btn btn-warning', key: i },
-	                            'See ',
-	                            data,
-	                            '\'s code'
-	                        );
-	                    })
-	                ),
-	                _react2.default.createElement(
-	                    'button',
-	                    { id: 'player-button', type: 'button', className: 'btn btn-danger' },
-	                    'Run'
+	                    _react2.default.createElement(
+	                        'button',
+	                        { id: 'run-button', type: 'button', className: 'btn btn-danger' },
+	                        'Run'
+	                    )
 	                ),
 	                _react2.default.createElement(
 	                    'div',
@@ -23960,9 +23954,11 @@
 	                        '/',
 	                        this.props.time_limit
 	                    ),
-	                    message,
-	                    ' ',
-	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement(
+	                        'p',
+	                        { id: 'whos-turn' },
+	                        message
+	                    ),
 	                    'starttime ',
 	                    this.props.starttime_utc,
 	                    ' ',
