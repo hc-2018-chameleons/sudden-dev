@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
+import runit from '../skulpt-run.js'
 
 class Sidebar extends Component {
     constructor(props) {
@@ -27,12 +28,12 @@ class Sidebar extends Component {
           <ul>
               {
                   this.props.player_ordering.map(function(data, i) {
-                    return <button id="player-button" type="button" className="btn btn-warning" key={i}>See {data}'s code</button>
+                    return <button id="player-button" type="button" className="btn btn-warning" key={i}>See {data}s code</button>
                   })
               }
           </ul>
-          
-          <button id="player-button" type="button" className="btn btn-danger">Run</button>
+
+          <button id="player-button" type="button" className="btn btn-danger" onClick={runit}>Run</button>
 
           <div id="turn-duration">
 
