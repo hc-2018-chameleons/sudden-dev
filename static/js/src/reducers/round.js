@@ -50,9 +50,23 @@ export default function roundReducer(state = [], action) {
 
     case actions.TIME_TICK:
       //quick dirty hack nobody needs to know
-      if (state.current_time <= 0) {
+      if (state.current_time == 0) {
+          let newtime = -1;
           alert('TOO BAD YOU LOSE :((((');
-          return state;
+          return Object.assign({}, state, {
+                starttime_utc : state.starttime_utc,
+                time_limit : state.time_limit,
+                switch_time : state.switch_time,
+                dead_time : state.dead_time,
+                problem : state.problem,
+                test_case_inputs : state.test_case_inputs,
+                test_case_outputs : state.test_case_outputs,
+                player_ordering : state.player_ordering,
+                results : state.results,
+
+                current_time : newtime,
+                is_switch_time : state.is_switch_time
+          })
       }
 
       let newtime = state.current_time - 1;
