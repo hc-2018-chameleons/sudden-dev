@@ -32,6 +32,9 @@ def chat_room(request, label):
     # upon first visit (a la etherpad).
     room, created = Room.objects.get_or_create(label=label)
 
+    if not created and room.capacity <= 0:
+        redirect(about)
+
     return render(request, "index.html", {
         'room': room,
     })

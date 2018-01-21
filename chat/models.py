@@ -2,11 +2,18 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
+from random import randint
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
+    time_limit_seconds = models.IntegerField(default=5*60)
     def __str__(self):
         return self.question_text
+
+    def random(self):
+        count = self.aggregate(count=Count('id'))['count']
+        random_index = randint(0, count - 1)
+        return self.all()[random_index]
 
 class TestCase(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -16,11 +23,7 @@ class TestCase(models.Model):
 class Room(models.Model):
     name = models.TextField()
     label = models.SlugField(unique=True)
-    question = models.ForeignKey(Question, on_delete=models.PROTECT, null=True)
-    start_time = models.DateTimeField(default=timezone.now, db_index=True)
-    total_duration = models.IntegerField(default=0)
-    round_start_time = models.DateTimeField(default=timezone.now, db_index=True)
-    round_duration = models.IntegerField(default=5)
+    capacity = models.IntegerField(default=4)
 
     def __unicode__(self):
         return self.label
