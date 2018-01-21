@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
-class Editor extends Component {
+class BaseEditor extends Component {
     constructor(props) {
         super(props);
     }
@@ -12,5 +12,14 @@ class Editor extends Component {
         );
     }
 }
+
+const mapStateToProps = (state) => ({
+    players: state.round.player_ordering,
+});
+
+const Editor = connect(
+  mapStateToProps,
+  null
+)(BaseEditor);
 
 export default Editor;

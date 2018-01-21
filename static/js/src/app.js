@@ -16,9 +16,8 @@ store.dispatch(playerAdd('Thi'));
 store.dispatch(playerAdd('Nik'));
 store.dispatch(playerAdd('FistOfHit'));
 store.dispatch(playerAdd('wakeuprj'));
-
 let round = {
-    starttime_utc : 500,
+    starttime_utc : new Date().getTime(),
     switch_time : 5,
     dead_time : 5,
     time_limit : 100,
