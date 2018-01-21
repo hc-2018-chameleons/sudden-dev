@@ -321,11 +321,10 @@ body, html {
     color: white;
 }
 
-#name-field {
-    background-color: black;
-    width: 20%;
+#red-text {
+    color : red;
 }
 
-#join-button:hover {
-
+#main-title {
+   font-size  : 200px;
 }
