@@ -328,3 +328,7 @@ body, html {
 #main-title {
    font-size  : 200px;
 }
+
+#name-field {
+    color: black;
+}
