@@ -24048,6 +24048,10 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
 	var _reactRedux = __webpack_require__(159);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -24068,9 +24072,25 @@
 	    }
 
 	    _createClass(BaseEditor, [{
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            //TODO:yadadaydyad
+	            var enabled = this.props.players[0] == 'Thi' && this.props.is_switch_time;
+
+	            var node = _reactDom2.default.findDOMNode(this.refs.root);
+	            var editor = ace.edit(node);
+	            editor.setReadOnly(!enabled);
+	            editor.getSession().setMode("ace/mode/javascript");
+	            if (enabled) {
+	                editor.setTheme("ace/theme/monokai");
+	            } else {
+	                editor.setTheme("ace/theme/clouds");
+	            }
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            return _react2.default.createElement('div', { id: 'firepad' });
+	            return _react2.default.createElement('div', { id: 'firepad', ref: 'root' });
 	        }
 	    }]);
 
@@ -24079,7 +24099,8 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
-	        players: state.round.player_ordering
+	        players: state.round.player_ordering,
+	        is_switch_time: state.round.is_switch_time
 	    };
 	};
 
