@@ -25,7 +25,7 @@ export default function roundReducer(state = [], action) {
       }
       let current_time = action.round.round.time_limit - elapsed;
 
-      let switch_time = 5;
+      let switch_time = 15;
       let dead_time = 3;
 
       let players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.round.time_limit, action.round.round.player_ordering);
@@ -65,7 +65,7 @@ export default function roundReducer(state = [], action) {
           player_order.push(player_order.shift());
           //next player can now write
       }
-      
+
       return Object.assign({}, state, {
           starttime_utc : state.starttime_utc,
           time_limit : state.time_limit,
