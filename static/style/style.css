@@ -28,7 +28,7 @@ body, html {
 #problem-itself {
     text-align: center;
     animation-name: probBlackRed;
-    animation-duration: 6s;
+    animation-duration: 5s;
     animation-iteration-count: infinite;
 }
 
