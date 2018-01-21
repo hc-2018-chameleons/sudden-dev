@@ -7,13 +7,20 @@ class PlayerList extends Component {
     }
 
     render() {
-        if (this.props.players && this.props.player_inds) {
-            const player_sidebar_limit = this.props.player_inds.length;
+        if (this.props.players) {
+            let order = []
+            if (this.props.player_inds) {
+                order = this.props.player_inds;
+            } else {
+                order = Object.keys(this.props.players);
+            }
+
+            const player_sidebar_limit = order.length;
             let player_buttons = []
             let ids = []
 
             for (let i = 0; i < player_sidebar_limit; i++) {
-                let index = this.props.player_inds[i % this.props.player_inds.length];
+                let index = order[i % order.length];
                 player_buttons.push(this.props.players[index]);
 
                 /* Highlight current player */
