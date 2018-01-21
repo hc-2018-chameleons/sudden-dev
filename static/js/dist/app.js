@@ -23548,7 +23548,7 @@
 	            var current_time = action.round.round.time_limit - elapsed;
 
 	            var switch_time = 5;
-	            var dead_time = 5;
+	            var dead_time = 3;
 
 	            var players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.round.time_limit, action.round.round.player_ordering);
 
@@ -23821,13 +23821,20 @@
 	    _createClass(PlayerList, [{
 	        key: 'render',
 	        value: function render() {
-	            if (this.props.players && this.props.player_inds) {
-	                var player_sidebar_limit = this.props.player_inds.length;
+	            if (this.props.players) {
+	                var order = [];
+	                if (this.props.player_inds) {
+	                    order = this.props.player_inds;
+	                } else {
+	                    order = Object.keys(this.props.players);
+	                }
+
+	                var player_sidebar_limit = order.length;
 	                var player_buttons = [];
 	                var ids = [];
 
 	                for (var i = 0; i < player_sidebar_limit; i++) {
-	                    var index = this.props.player_inds[i % this.props.player_inds.length];
+	                    var index = order[i % order.length];
 	                    player_buttons.push(this.props.players[index]);
 
 	                    /* Highlight current player */
