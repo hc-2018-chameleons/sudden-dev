@@ -10,11 +10,6 @@ class Question(models.Model):
     def __str__(self):
         return self.question_text
 
-    def random(self):
-        count = self.aggregate(count=Count('id'))['count']
-        random_index = randint(0, count - 1)
-        return self.all()[random_index]
-
 class TestCase(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     test_input = models.CharField(max_length=200)
@@ -52,4 +47,3 @@ class Message(models.Model):
 
     def as_dict(self):
         return {'handle': self.handle, 'message': self.message, 'timestamp': self.formatted_timestamp}
-# Question.objects.all()[0].testcase_set.create(test_input=pickle.dumps(3), expected_output=pickle.dumps(6))

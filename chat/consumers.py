@@ -5,7 +5,7 @@ import time
 import calendar
 from channels import Group
 from channels.sessions import channel_session
-from .models import Room, Player
+from .models import Room, Player, Question
 
 log = logging.getLogger(__name__)
 
@@ -50,13 +50,16 @@ def ws_connect(message):
     send_players_update(room, Group('chat-'+label, channel_layer=message.channel_layer))
 
     if room.capacity == 0:
-        q = Question.random()
+        q = Question.objects.order_by('?').first()
 
         test_case_inputs = []
         test_case_outputs = []
-        for test_case in q.test_case_set.all():
+        for test_case in q.testcase_set.all():
             test_case_inputs.append(test_case.test_input)
             test_case_outputs.append(test_case.expected_output)
+
+        players = players_update_dict(room)
+        positions = sorted(players.keys())
 
         round_json = {
             'round' : {
@@ -64,10 +67,12 @@ def ws_connect(message):
                 'time_limit': q.time_limit_seconds,
                 'problem' : q.question_text,
                 'test_case_inputs' : test_case_inputs,
-                'test_case_outputs' : test_case_outputs
+                'test_case_outputs' : test_case_outputs,
+                'players' : positions
             }
         }
-        Group('chat-'+label, channel_layer=message.channel_layer).send({'text': json.dumps()})
+
+        Group('chat-'+label, channel_layer=message.channel_layer).send({'text': json.dumps(round_json)})
 
 @channel_session
 def ws_receive(message):
@@ -116,14 +121,14 @@ def ws_disconnect(message):
         pass
 
 def send_players_update(room, group):
+    message_dict = {}
+    message_dict['players'] = players_update_dict(room)
+    group.send({'text': json.dumps(message_dict)})
+
+def players_update_dict(room):
     players_dict = {}
     for player in room.player_set.all():
         name = player.name if player.name is not None else ""
         players_dict[player.position] = name
 
-    message_dict = {}
-    message_dict['players'] = players_dict
-    group.send({'text': json.dumps(players_dict)})
-
-
-
+    return players_dict
