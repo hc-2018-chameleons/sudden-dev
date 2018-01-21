@@ -8,14 +8,14 @@ class PlayerList extends Component {
     }
 
     render() {
-        const player_sidebar_limit = 10;
+        const player_sidebar_limit = Object.keys(this.props.players).length;
         let player_buttons = []
 
         for (let i = 0; i < player_sidebar_limit; i++) {
             let index = this.props.player_inds[i % this.props.player_inds.length];
             player_buttons.push(this.props.players[index]);
         }
-
+console.log(player_buttons)
         return (
         <div>
             <h2 id="players-tag">Players</h2>

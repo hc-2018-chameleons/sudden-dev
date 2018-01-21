@@ -74,11 +74,11 @@
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 
-	var _editor = __webpack_require__(220);
+	var _editor = __webpack_require__(219);
 
 	var _editor2 = _interopRequireDefault(_editor);
 
-	var _WebSocketConnection = __webpack_require__(221);
+	var _WebSocketConnection = __webpack_require__(220);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
 
@@ -23801,14 +23801,14 @@
 	    _createClass(PlayerList, [{
 	        key: 'render',
 	        value: function render() {
-	            var player_sidebar_limit = 10;
+	            var player_sidebar_limit = Object.keys(this.props.players).length;
 	            var player_buttons = [];
 
 	            for (var i = 0; i < player_sidebar_limit; i++) {
 	                var index = this.props.player_inds[i % this.props.player_inds.length];
 	                player_buttons.push(this.props.players[index]);
 	            }
-
+	            console.log(player_buttons);
 	            return _react2.default.createElement(
 	                'div',
 	                null,
@@ -23892,11 +23892,15 @@
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
-	                null,
+	                { id: 'problem-display' },
 	                _react2.default.createElement(
 	                    'h2',
-	                    { id: 'problem-bar' },
-	                    'Current Problem: ',
+	                    { id: 'your-task' },
+	                    'Your Task:'
+	                ),
+	                _react2.default.createElement(
+	                    'p',
+	                    { id: 'problem-itself' },
 	                    this.props.problem
 	                )
 	            );
@@ -23934,7 +23938,7 @@
 
 	var _reactRedux = __webpack_require__(159);
 
-	var _skulptRun = __webpack_require__(219);
+	var _skulptRun = __webpack_require__(221);
 
 	var _skulptRun2 = _interopRequireDefault(_skulptRun);
 
@@ -23985,45 +23989,27 @@
 	                null,
 	                _react2.default.createElement(
 	                    'h2',
-	                    { id: 'others-tag' },
-	                    'Other stuff'
-	                ),
-	                _react2.default.createElement(
-	                    'h2',
 	                    { id: 'test-cases-tag' },
 	                    'Test Cases'
 	                ),
+	                this.props.test_case_inputs.map(function (data, i) {
+	                    return _react2.default.createElement(
+	                        'button',
+	                        { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
+	                        'Test case: ',
+	                        i + 1
+	                    );
+	                }),
 	                _react2.default.createElement(
-	                    'ul',
+	                    'div',
 	                    null,
-	                    this.props.test_case_inputs.map(function (data, i) {
-	                        return _react2.default.createElement(
-	                            'button',
-	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
-	                            data
-	                        );
-	                    })
-	                ),
-	                _react2.default.createElement(
-	                    'ul',
-	                    null,
-	                    this.props.player_ordering.map(function (data, i) {
-	                        return _react2.default.createElement(
-	                            'button',
-	                            { id: 'player-button', type: 'button', className: 'btn btn-warning', key: i },
-	                            'See ',
-	                            data,
-	                            's code'
-	                        );
-	                    })
-	                ),
-	                _react2.default.createElement(
-	                    'button',
-	                    { id: 'player-button', type: 'button', className: 'btn btn-danger',
-	                        onClick: function onClick() {
-	                            return (0, _skulptRun2.default)(_this2.state.code);
-	                        } },
-	                    'Run'
+	                    _react2.default.createElement(
+	                        'button',
+	                        { id: 'run-button', type: 'button', className: 'btn btn-danger', onClick: function onClick() {
+	                                return (0, _skulptRun2.default)(_this2.state.code);
+	                            } },
+	                        'Run'
+	                    )
 	                ),
 	                _react2.default.createElement(
 	                    'div',
@@ -24035,9 +24021,11 @@
 	                        '/',
 	                        this.props.time_limit
 	                    ),
-	                    message,
-	                    ' ',
-	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement(
+	                        'p',
+	                        { id: 'whos-turn' },
+	                        message
+	                    ),
 	                    'starttime ',
 	                    this.props.starttime_utc,
 	                    ' ',
@@ -24080,49 +24068,6 @@
 
 /***/ }),
 /* 219 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = runit;
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
-	function outf(text) {
-	    console.log("Program Output: " + text);
-	}
-
-	function builtinRead(x) {
-	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
-	    return Sk.builtinFiles["files"][x];
-	}
-
-	function runit(prog) {
-	    console.log(prog);
-	    Sk.configure({
-	        output: outf,
-	        read: builtinRead
-	    });
-	    var test_input = "5"; // TODO: replace by test input
-	    var functionCall = prog;
-	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
-	    console.log(functionCall);
-	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-	    var myPromise = Sk.misceval.asyncToPromise(function () {
-	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
-	    });
-	    myPromise.then(function (mod) {
-	        console.log('Compiled successfully');
-	    }, function (err) {
-	        console.log("Program didn't compile!");
-	        console.log(err.toString());
-	    });
-	}
-
-/***/ }),
-/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24198,7 +24143,7 @@
 	exports.default = Editor;
 
 /***/ }),
-/* 221 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24267,6 +24212,49 @@
 	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = runit;
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
+	function outf(text) {
+	    console.log("Program Output: " + text);
+	}
+
+	function builtinRead(x) {
+	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
+	    return Sk.builtinFiles["files"][x];
+	}
+
+	function runit(prog) {
+	    console.log(prog);
+	    Sk.configure({
+	        output: outf,
+	        read: builtinRead
+	    });
+	    var test_input = "5"; // TODO: replace by test input
+	    var functionCall = prog;
+	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
+	    console.log(functionCall);
+	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+	    var myPromise = Sk.misceval.asyncToPromise(function () {
+	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
+	    });
+	    myPromise.then(function (mod) {
+	        console.log('Compiled successfully');
+	    }, function (err) {
+	        console.log("Program didn't compile!");
+	        console.log(err.toString());
+	    });
+	}
 
 /***/ })
 /******/ ]);
