@@ -10,13 +10,13 @@ function builtinRead(x) {
     return Sk.builtinFiles["files"][x];
 }
 
-export default function runit(prog) {
-    console.log(prog);
+export default function runit(prog, test_input, expected_output) {
+    //TODO: Use expected output
+    console.log(expected_output);
     Sk.configure({
         output: outf,
         read: builtinRead
     });
-    var test_input = "5"; // TODO: replace by test input
     var functionCall = prog;
     var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
     console.log(functionCall);

@@ -30,8 +30,8 @@ class Sidebar extends Component {
             <h2 id="test-cases-tag">Test Cases</h2>
                 {
                     this.props.test_case_inputs.map(function(data, i) {
-                        return <button id="test-case" type="button" className="btn btn-primary" onClick={() => runit(this.state.code)} key={i}>Run test case {i+1}</button>
-                    })
+                        return <button id="test-case" type="button" className="btn btn-primary" key={i} onClick={() => runit(this.state.code, this.props.test_case_inputs[i], this.props.test_case_outputs[i])}>Test case: {i+1}</button>
+                    }.bind(this))
                 }
             <div>
                 {/*{
