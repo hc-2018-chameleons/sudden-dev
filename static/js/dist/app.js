@@ -23808,16 +23808,13 @@
 	    function PlayerList(props) {
 	        _classCallCheck(this, PlayerList);
 
-	        var _this = _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
-
-	        console.log(props);
-	        return _this;
+	        return _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
 	    }
 
 	    _createClass(PlayerList, [{
 	        key: 'render',
 	        value: function render() {
-	            if (this.props.players && this.props.player_inds && this.props.you) {
+	            if (this.props.players && this.props.player_inds) {
 	                var player_sidebar_limit = this.props.player_inds.length;
 	                var player_buttons = [];
 	                var ids = [];
@@ -23872,7 +23869,7 @@
 	    return {
 	        player_inds: state.round.player_ordering,
 	        players: state.players.players.players,
-	        you: state.players.you
+	        you: state.players.you.you
 	    };
 	};
 
@@ -24186,16 +24183,18 @@
 	    _createClass(BaseEditor, [{
 	        key: 'componentDidUpdate',
 	        value: function componentDidUpdate() {
-	            var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
+	            if (this.props.players && this.props.players.length > 0) {
+	                var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
 
-	            var node = _reactDom2.default.findDOMNode(this.refs.root);
-	            var editor = ace.edit(node);
-	            editor.setReadOnly(!enabled);
-	            editor.getSession().setMode("ace/mode/python");
-	            if (enabled) {
-	                editor.setTheme("ace/theme/monokai");
-	            } else {
-	                editor.setTheme("ace/theme/clouds");
+	                var node = _reactDom2.default.findDOMNode(this.refs.root);
+	                var editor = ace.edit(node);
+	                editor.setReadOnly(!enabled);
+	                editor.getSession().setMode("ace/mode/python");
+	                if (enabled) {
+	                    editor.setTheme("ace/theme/monokai");
+	                } else {
+	                    editor.setTheme("ace/theme/clouds");
+	                }
 	            }
 	        }
 	    }, {

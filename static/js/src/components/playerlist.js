@@ -4,11 +4,10 @@ import {connect} from 'react-redux'
 class PlayerList extends Component {
     constructor(props) {
         super(props);
-        console.log(props)
     }
 
     render() {
-        if (this.props.players && this.props.player_inds && this.props.you) {
+        if (this.props.players && this.props.player_inds) {
             const player_sidebar_limit = this.props.player_inds.length;
             let player_buttons = []
             let ids = []
@@ -46,7 +45,7 @@ class PlayerList extends Component {
 const mapStateToProps = (state) => ({
     player_inds: state.round.player_ordering,
     players: state.players.players.players,
-    you: state.players.you
+    you: state.players.you.you
 });
 
 const ActivePlayerList = connect(
