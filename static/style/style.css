@@ -85,12 +85,31 @@ body, html {
     float: left;
 }
 
-#player-button{
-    width: 95%;
+#player-current-button {
+    background-color: #BB2211;
+    margin-bottom: 10px;
+    width: 90%;
+    height: 10%;
+    border: 1px solid black;
+    white-space: normal;
+}
+
+#player-button {
+    margin-bottom: 10px;
+    width: 90%;
     height: 10%;
     border: 1px solid black;
     white-space: normal;
     transition-duration: 0.3s
+}
+
+#player-current-button:hover {
+    background-color: #BB2211;
+    margin-bottom: 10px;
+    width: 85%;
+    height: 10%;
+    border: 1px solid black;
+    white-space: normal;
 }
 
 #player-button:hover {

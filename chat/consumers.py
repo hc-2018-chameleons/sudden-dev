@@ -45,7 +45,7 @@ def ws_connect(message):
 
     message.channel_session['position'] = player.position
     message.reply_channel.send({
-        "text": json.dumps({'you': player.position})
+        "text": json.dumps({'you': player.position, "type": "PLAYER_YOU"})
     })
     send_players_update(room, Group('chat-'+label, channel_layer=message.channel_layer))
 
@@ -68,10 +68,11 @@ def ws_connect(message):
                 'problem' : q.question_text,
                 'test_case_inputs' : test_case_inputs,
                 'test_case_outputs' : test_case_outputs,
-                'players' : positions
+                'player_ordering' : positions
             }
         }
 
+        round_json['type'] = 'START_ROUND'
         Group('chat-'+label, channel_layer=message.channel_layer).send({'text': json.dumps(round_json)})
 
 @channel_session
@@ -95,16 +96,16 @@ def ws_receive(message):
         log.debug("ws message isn't json text=%s", text)
         return
     
-    if len(data.keys()) != 1 or data.keys()[0] not in ['player_name']:
-        log.debug("ws message unexpected format data=%s", data)
-        return
+    #if len(data.keys()) != 1 or data.keys()[0] not in ['player_name']:
+    #    log.debug("ws message unexpected format data=%s", data)
+    #    return
 
     if data:
         position = message.channel_session['position']
         log.debug('message room=%s player=%s name=%s', 
             room.label, position, data['player_name'])
 
-        player = room.player_set.filter(position=position)
+        player = room.player_set.filter(position=position).first()
         player.name = data['player_name']
         player.save()
 
@@ -123,6 +124,7 @@ def ws_disconnect(message):
 def send_players_update(room, group):
     message_dict = {}
     message_dict['players'] = players_update_dict(room)
+    message_dict['type'] = 'PLAYER_UPDATE'
     group.send({'text': json.dumps(message_dict)})
 
 def players_update_dict(room):

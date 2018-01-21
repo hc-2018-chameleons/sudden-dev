@@ -1,15 +1,27 @@
 import * as client_actions from "./../actions/WSClientActions";
 import * as server_actions from "./../actions/WSServerActions";
 
+import {PLAYER_UPDATE, PLAYER_YOU, playerUpdate, playerYou} from "./../actions/player.js"
+import {START_ROUND, startRound, timeTick} from "./../actions/round.js"
+
 const socketMiddleware = (function () {
   let socket = null;
 
   /**
    * Handler for when the WebSocket opens
    */
-  const onOpen = (ws, store, host) => event => {
+  function onOpen(ws, store, host) {
     // Authenticate with Backend... somehow...
-    store.dispatch(client_actions.wsConnected(host))
+    store.dispatch(client_actions.wsConnected(host));
+    setTimeout(sendName,1000);
+  };
+
+  function sendName() {
+      name = document.cookie.match(new RegExp('name' + '=([^;]+)'))[1];
+      var message = {
+          player_name : name
+      }
+      socket.send(JSON.stringify(message));
   };
 
   /**
@@ -30,6 +42,19 @@ const socketMiddleware = (function () {
     switch (payload.type) {
       case server_actions.WS_HEALTH:
         store.dispatch(server_actions.wsHealth(status));
+        break;
+
+      case PLAYER_UPDATE:
+        store.dispatch(playerUpdate(payload));
+        break;
+
+      case PLAYER_YOU:
+        store.dispatch(playerYou(payload));
+        break;
+
+      case START_ROUND:
+        store.dispatch(startRound(payload));
+        setInterval(() => store.dispatch(timeTick()), 1000);
         break;
 
       default:
@@ -62,6 +87,7 @@ const socketMiddleware = (function () {
         socket.onmessage = onMessage(socket, store);
         socket.onclose = onClose(socket, store);
         socket.onopen = onOpen(socket, store, action.host);
+
 
         break;
 

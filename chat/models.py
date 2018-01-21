@@ -18,7 +18,7 @@ class TestCase(models.Model):
 class Room(models.Model):
     name = models.TextField()
     label = models.SlugField(unique=True)
-    capacity = models.IntegerField(default=4)
+    capacity = models.IntegerField(default=3)
 
     def __unicode__(self):
         return self.label
