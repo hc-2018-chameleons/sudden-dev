@@ -24052,7 +24052,21 @@
 	                }
 	                if (this.props.results) {
 	                    var test_message = this.props.results.passed + " passed, " + this.props.results.failed + " failed.";
+	                    var passed = this.props.results.passed;
+	                    var failed = this.props.results.failed;
 	                }
+
+	                var getId = function getId(me, i) {
+	                    if (me.props.results) {
+	                        if (i < me.props.results.passed) {
+	                            return "test-case-pass";
+	                        } else {
+	                            return "test-case-fail";
+	                        }
+	                    } else {
+	                        return "test-case";
+	                    }
+	                };
 	                return _react2.default.createElement(
 	                    'div',
 	                    null,
@@ -24064,7 +24078,7 @@
 	                    this.props.test_case_inputs.map(function (data, i) {
 	                        return _react2.default.createElement(
 	                            'button',
-	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
+	                            { id: getId(this, i), type: 'button', className: 'btn btn-primary', key: i },
 	                            'Test case: ',
 	                            i + 1
 	                        );
