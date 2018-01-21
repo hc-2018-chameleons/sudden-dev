@@ -51,12 +51,20 @@ def ws_connect(message):
 
     if room.capacity == 0:
         q = Question.random()
+
+        test_case_inputs = []
+        test_case_outputs = []
+        for test_case in q.test_case_set.all():
+            test_case_inputs.append(test_case.test_input)
+            test_case_outputs.append(test_case.expected_output)
+
         round_json = {
             'round' : {
                 'starttime_utc' : calendar.timegm(time.gmtime()) + 5,
                 'time_limit': q.time_limit_seconds,
                 'problem' : q.question_text,
-                'test_cases' : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']  # TODO
+                'test_case_inputs' : test_case_inputs,
+                'test_case_outputs' : test_case_outputs
             }
         }
         Group('chat-'+label, channel_layer=message.channel_layer).send({'text': json.dumps()})
