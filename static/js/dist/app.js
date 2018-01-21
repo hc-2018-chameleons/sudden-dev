@@ -74,11 +74,11 @@
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 
-	var _editor = __webpack_require__(219);
+	var _editor = __webpack_require__(220);
 
 	var _editor2 = _interopRequireDefault(_editor);
 
-	var _WebSocketConnection = __webpack_require__(220);
+	var _WebSocketConnection = __webpack_require__(221);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
 
@@ -96,19 +96,23 @@
 
 	var rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
-	_store2.default.dispatch((0, _player.playerAdd)('Thi'));
-	_store2.default.dispatch((0, _player.playerAdd)('Nik'));
-	_store2.default.dispatch((0, _player.playerAdd)('FistOfHit'));
-	_store2.default.dispatch((0, _player.playerAdd)('wakeuprj'));
+	_store2.default.dispatch((0, _player.playerYou)(0));
+	_store2.default.dispatch((0, _player.playerUpdate)({
+	    0: 'Thi',
+	    1: 'Nik',
+	    2: 'Hit',
+	    3: 'Rish'
+	}));
 
 	var round = {
-	    starttime_utc: 500,
-	    switch_time: 5,
-	    dead_time: 5,
+	    starttime_utc: new Date().getTime(),
+	    //switch_time : 5,
+	    //dead_time : 5,
 	    time_limit: 100,
-	    player_ordering: ['Thi', 'Nik', 'FistOfHit', 'wakeuprj'],
+	    player_ordering: [0, 1, 3, 2],
 	    problem: 'Sort a list!',
-	    test_cases: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
+	    test_case_inputs: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]'],
+	    test_case_outputs: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
 	};
 
 	_store2.default.dispatch((0, _round.startRound)(round));
@@ -23311,7 +23315,7 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 
 	var _redux = __webpack_require__(179);
@@ -23325,8 +23329,12 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var initial = {
-	  ws: { host: [] },
-	  players: []
+	    ws: { host: [] },
+	    players: {
+	        players: {},
+	        you: 0
+	    },
+	    round: {}
 	};
 
 	var store = (0, _redux.createStore)(_reducers.reducers, initial, (0, _redux.applyMiddleware)(_WebSockets2.default));
@@ -23457,19 +23465,23 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 	function playerReducer() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	  var action = arguments[1];
 
 	  console.log(action.type);
 	  switch (action.type) {
-	    case actions.PLAYER_ADD:
-	      return [].concat(_toConsumableArray(state), [{ player: action.player }]);
+	    case actions.PLAYER_UPDATE:
+	      return Object.assign({}, state, {
+	        players: action.players,
+	        you: state.you
+	      });
 
-	    case actions.PLAYER_REMOVE:
-	      return [].concat(_toConsumableArray(state), [{ player: action.player }]);
+	    case actions.PLAYER_YOU:
+	      return Object.assign({}, state, {
+	        players: state.players,
+	        you: action.you
+	      });
 
 	    default:
 	      return state;
@@ -23485,15 +23497,15 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var PLAYER_ADD = exports.PLAYER_ADD = "PLAYER_ADD";
-	var PLAYER_REMOVE = exports.PLAYER_REMOVE = "PLAYER_REMOVE";
+	var PLAYER_UPDATE = exports.PLAYER_UPDATE = "PLAYER_UPDATE";
+	var PLAYER_YOU = exports.PLAYER_YOU = "PLAYER_YOU";
 
-	var playerAdd = exports.playerAdd = function playerAdd(player) {
-	  return { type: PLAYER_ADD, player: player };
+	var playerUpdate = exports.playerUpdate = function playerUpdate(players) {
+	  return { type: PLAYER_UPDATE, players: players };
 	};
 
-	var playerRemove = exports.playerRemove = function playerRemove(player) {
-	  return { type: PLAYER_REMOVE, player: player };
+	var playerYou = exports.playerYou = function playerYou(id) {
+	  return { type: PLAYER_YOU, you: id };
 	};
 
 /***/ }),
@@ -23513,36 +23525,69 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+	// Synchronize player order list
+	function shiftPlayerList(switch_time, dead_time, elapsed, time_limit, order) {
+	    var no_of_turns = Math.floor(time_limit / (switch_time + dead_time));
+
+	    var cur_turn = Math.floor(elapsed / time_limit * no_of_turns);
+	    var cur_player = cur_turn % order.length;
+
+	    var players = order;
+	    for (var i = 0; i < cur_player; i++) {
+	        players.push(players.shift());
+	    }
+
+	    return players;
+	}
+
 	function roundReducer() {
 	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	    var action = arguments[1];
 
 	    switch (action.type) {
 	        case actions.START_ROUND:
+	            var utc = new Date().getTime();
+	            var elapsed = utc - action.round.starttime_utc;
+	            var current_time = action.round.time_limit - elapsed;
+
+	            var switch_time = 5;
+	            var dead_time = 5;
+
+	            var players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.time_limit, action.round.player_ordering);
+
+	            var turn_time = elapsed % (switch_time + dead_time);
+	            var is_sw_time = turn_time >= dead_time;
+
 	            return Object.assign({}, state, {
 	                starttime_utc: action.round.starttime_utc,
 	                time_limit: action.round.time_limit,
-	                switch_time: action.round.switch_time,
-	                dead_time: action.round.dead_time,
+	                switch_time: switch_time,
+	                dead_time: dead_time,
 	                player_ordering: action.round.player_ordering,
 	                problem: action.round.problem,
-	                test_cases: action.round.test_cases,
 
-	                current_time: action.round.time_limit,
-	                is_switch_time: true
+	                test_case_inputs: action.round.test_case_inputs,
+	                test_case_outputs: action.round.test_case_outputs,
+
+	                current_time: current_time,
+	                is_switch_time: is_sw_time
 	            });
 
 	        case actions.TIME_TICK:
+	            //quick dirty hack nobody needs to know
+	            if (state.current_time <= 0) {
+	                return state;
+	            }
 	            var newtime = state.current_time - 1;
 	            var diff = state.time_limit - newtime;
 	            var newswitchflag = state.is_switch_time;
 	            var player_order = state.player_ordering.slice();
 
-	            if (newswitchflag && diff % state.switch_time == 0) {
+	            if (!newswitchflag && diff % state.dead_time == 0) {
+	                newswitchflag = true;
+	            } else if (newswitchflag && diff % (state.switch_time + state.dead_time) == 0) {
 	                newswitchflag = false;
 	                player_order.push(player_order.shift());
-	            } else if (!newswitchflag && diff % (state.switch_time + state.dead_time) == 0) {
-	                newswitchflag = true;
 	                //next player can now write
 	            }
 
@@ -23552,7 +23597,8 @@
 	                switch_time: state.switch_time,
 	                dead_time: state.dead_time,
 	                problem: state.problem,
-	                test_cases: state.test_cases,
+	                test_case_inputs: state.test_case_inputs,
+	                test_case_outputs: state.test_case_outputs,
 	                player_ordering: player_order,
 
 	                current_time: newtime,
@@ -23746,19 +23792,23 @@
 	    function PlayerList(props) {
 	        _classCallCheck(this, PlayerList);
 
-	        return _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
+
+	        console.log(props);
+	        return _this;
 	    }
 
 	    _createClass(PlayerList, [{
 	        key: 'render',
 	        value: function render() {
-	            var player_sidebar_limit = this.props.players.length;
+	            var player_sidebar_limit = Object.keys(this.props.players).length;
 	            var player_buttons = [];
 
 	            for (var i = 0; i < player_sidebar_limit; i++) {
-	                player_buttons.push(this.props.players[i % this.props.players.length]);
+	                var index = this.props.player_inds[i % this.props.player_inds.length];
+	                player_buttons.push(this.props.players[index]);
 	            }
-
+	            console.log(player_buttons);
 	            return _react2.default.createElement(
 	                'div',
 	                null,
@@ -23789,7 +23839,9 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
-	        players: state.round.player_ordering
+	        player_inds: state.round.player_ordering,
+	        players: state.players.players,
+	        you: state.players.you
 	    };
 	};
 
@@ -23886,6 +23938,10 @@
 
 	var _reactRedux = __webpack_require__(159);
 
+	var _skulptRun = __webpack_require__(219);
+
+	var _skulptRun2 = _interopRequireDefault(_skulptRun);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23894,19 +23950,33 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	function getCode() {
+	    var editor = ace.edit('firepad');
+	    return editor.getValue();
+	}
+
 	var Sidebar = function (_Component) {
 	    _inherits(Sidebar, _Component);
 
 	    function Sidebar(props) {
 	        _classCallCheck(this, Sidebar);
 
-	        return _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
+
+	        _this.state = { code: '' };
+	        console.log(props);
+	        return _this;
 	    }
 
 	    _createClass(Sidebar, [{
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            this.state.code = getCode();
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var current_player = this.props.player_ordering[0];
+	            var current_player = this.props.players[this.props.player_ordering[0]];
 	            if (this.props.is_switch_time) {
 	                var message = "It's " + current_player + "'s turn!";
 	            } else {
@@ -23920,19 +23990,12 @@
 	                    { id: 'test-cases-tag' },
 	                    'Test Cases'
 	                ),
-	                this.props.test_cases.map(function (data, i) {
-
+	                this.props.test_case_inputs.map(function (data, i) {
 	                    return _react2.default.createElement(
-	                        'div',
-	                        null,
-	                        ' ',
-	                        _react2.default.createElement(
-	                            'button',
-	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
-	                            'Test case: ',
-	                            i + 1
-	                        ),
-	                        ' '
+	                        'button',
+	                        { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
+	                        'Test case: ',
+	                        i + 1
 	                    );
 	                }),
 	                _react2.default.createElement(
@@ -23986,8 +24049,12 @@
 	        dead_time: state.round.dead_time,
 	        player_ordering: state.round.player_ordering,
 	        problem: state.round.problem,
-	        test_cases: state.round.test_cases,
-	        is_switch_time: state.round.is_switch_time
+	        test_case_inputs: state.round.test_case_inputs,
+	        test_case_outputs: state.round.test_case_outputs,
+	        is_switch_time: state.round.is_switch_time,
+
+	        players: state.players.players,
+	        you: state.players.you
 	    };
 	};
 
@@ -23997,6 +24064,49 @@
 
 /***/ }),
 /* 219 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = runit;
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
+	function outf(text) {
+	    console.log("Program Output: " + text);
+	}
+
+	function builtinRead(x) {
+	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
+	    return Sk.builtinFiles["files"][x];
+	}
+
+	function runit(prog) {
+	    console.log(prog);
+	    Sk.configure({
+	        output: outf,
+	        read: builtinRead
+	    });
+	    var test_input = "5"; // TODO: replace by test input
+	    var functionCall = prog;
+	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
+	    console.log(functionCall);
+	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+	    var myPromise = Sk.misceval.asyncToPromise(function () {
+	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
+	    });
+	    myPromise.then(function (mod) {
+	        console.log('Compiled successfully');
+	    }, function (err) {
+	        console.log("Program didn't compile!");
+	        console.log(err.toString());
+	    });
+	}
+
+/***/ }),
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24011,6 +24121,10 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
 	var _reactRedux = __webpack_require__(159);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -24021,29 +24135,54 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Editor = function (_Component) {
-	    _inherits(Editor, _Component);
+	var BaseEditor = function (_Component) {
+	    _inherits(BaseEditor, _Component);
 
-	    function Editor(props) {
-	        _classCallCheck(this, Editor);
+	    function BaseEditor(props) {
+	        _classCallCheck(this, BaseEditor);
 
-	        return _possibleConstructorReturn(this, (Editor.__proto__ || Object.getPrototypeOf(Editor)).call(this, props));
+	        return _possibleConstructorReturn(this, (BaseEditor.__proto__ || Object.getPrototypeOf(BaseEditor)).call(this, props));
 	    }
 
-	    _createClass(Editor, [{
+	    _createClass(BaseEditor, [{
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
+
+	            var node = _reactDom2.default.findDOMNode(this.refs.root);
+	            var editor = ace.edit(node);
+	            editor.setReadOnly(!enabled);
+	            editor.getSession().setMode("ace/mode/python");
+	            if (enabled) {
+	                editor.setTheme("ace/theme/monokai");
+	            } else {
+	                editor.setTheme("ace/theme/clouds");
+	            }
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            return _react2.default.createElement('div', { id: 'firepad' });
+	            return _react2.default.createElement('div', { id: 'firepad', ref: 'root' });
 	        }
 	    }]);
 
-	    return Editor;
+	    return BaseEditor;
 	}(_react.Component);
+
+	var mapStateToProps = function mapStateToProps(state) {
+	    return {
+	        players: state.round.player_ordering,
+	        you: state.players.you,
+	        is_switch_time: state.round.is_switch_time
+	    };
+	};
+
+	var Editor = (0, _reactRedux.connect)(mapStateToProps, null)(BaseEditor);
 
 	exports.default = Editor;
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";

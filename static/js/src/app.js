@@ -7,24 +7,28 @@ import ActiveProblemBar from "./components/problembar"
 import ActiveSidebar from "./components/sidebar"
 import Editor from "./components/editor"
 import WebSocketContainer from "./components/containers/WebSocketConnection";
-import {playerAdd} from './actions/player.js'
+import {playerUpdate, playerYou} from './actions/player.js'
 import {startRound, timeTick} from './actions/round.js'
 
 const rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
-store.dispatch(playerAdd('Thi'));
-store.dispatch(playerAdd('Nik'));
-store.dispatch(playerAdd('FistOfHit'));
-store.dispatch(playerAdd('wakeuprj'));
+store.dispatch(playerYou(0));
+store.dispatch(playerUpdate({
+    0: 'Thi',
+    1: 'Nik',
+    2: 'Hit',
+    3: 'Rish'
+}));
 
 let round = {
-    starttime_utc : 500,
-    switch_time : 5,
-    dead_time : 5,
+    starttime_utc : new Date().getTime(),
+    //switch_time : 5,
+    //dead_time : 5,
     time_limit : 100,
-    player_ordering : ['Thi', 'Nik', 'FistOfHit', 'wakeuprj'],
+    player_ordering : [0, 1, 3, 2],
     problem : 'Sort a list!',
-    test_cases : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
+    test_case_inputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]'],
+    test_case_outputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
 }
 
 store.dispatch(startRound(round));

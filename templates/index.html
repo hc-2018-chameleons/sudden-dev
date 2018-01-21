@@ -46,12 +46,12 @@ function init() {
     var editor = ace.edit('firepad');
 
     // Create Firepad.
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/javascript");
+    editor.setTheme("ace/theme/clouds");
+    editor.session.setMode("ace/mode/python");
 
-    //// Create Firepad.
+    // Create Firepad.
     var firepad = Firepad.fromACE(firepadRef, editor, {
-        defaultText: '// JavaScript Editing with Firepad!\nfunction go() {\n  var message = "Hello, world.";\n  console.log(message);\n}'
+        defaultText: 'def func(num): \n'
     });
 }
 

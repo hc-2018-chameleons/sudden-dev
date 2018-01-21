@@ -1,10 +1,10 @@
-export const PLAYER_ADD = "PLAYER_ADD";
-export const PLAYER_REMOVE = "PLAYER_REMOVE";
+export const PLAYER_UPDATE = "PLAYER_UPDATE";
+export const PLAYER_YOU = "PLAYER_YOU";
 
-export const playerAdd = (player) => {
-  return { type: PLAYER_ADD, player: player };
+export const playerUpdate = (players) => {
+  return { type: PLAYER_UPDATE, players: players };
 };
 
-export const playerRemove = (player) => {
-  return { type: PLAYER_REMOVE, player: player };
+export const playerYou = (id) => {
+  return { type: PLAYER_YOU, you: id};
 };
