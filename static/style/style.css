@@ -20,11 +20,20 @@ body, html {
     color: white;
 }
 
+@keyframes probBlackRed {
+    from {color: white;}
+    to {color: red;}
+}
+
 #problem-itself {
     text-align: center;
+    animation-name: probBlackRed;
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
 }
 
 #your-task {
+    font-size: 2em;
     padding-top: 2%;
     text-align: center;
     text-decoration: underline;
@@ -63,7 +72,7 @@ body, html {
     margin-left: 2%;
     float: left;
     margin-bottom: 5%;
-    box-shadow: 0px 0px 10px 10px LimeGreen;
+    box-shadow: 0px 0px 10px 10px black;
 }
 
 .firepad {
@@ -283,6 +292,7 @@ body, html {
 }
 
 #join-page-title {
+    font-size: 3.5em;
     text-align: center;
     margin-top: 2%;
 }
@@ -295,7 +305,6 @@ body, html {
 #join-form {
     padding-top: 10%;
     text-align: center;
-    color: black;
 }
 
 #footnote {
@@ -306,7 +315,17 @@ body, html {
 }
 
 #big-or {
+    font-size: 2em;
     padding-top: 1%;
     padding-bottom: 1%;
     color: white;
+}
+
+#name-field {
+    background-color: black;
+    width: 20%;
+}
+
+#join-button:hover {
+
 }
