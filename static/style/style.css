@@ -84,9 +84,9 @@ body, html {
 #player-current-button {
     background-color: #BB2211;
     margin-bottom: 10px;
-    width: 80%;
+    width: 90%;
     height: 10%;
-    border: 2px solid black;
+    border: 1px solid black;
     white-space: normal;
 }
 
@@ -101,11 +101,10 @@ body, html {
 #player-current-button:hover {
     background-color: #BB2211;
     margin-bottom: 10px;
-    width: 80%;
+    width: 85%;
     height: 10%;
-    border: 2px solid black;
+    border: 1px solid black;
     white-space: normal;
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
 #player-button:hover {
