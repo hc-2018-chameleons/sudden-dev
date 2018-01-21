@@ -24186,18 +24186,16 @@
 	    _createClass(BaseEditor, [{
 	        key: 'componentDidUpdate',
 	        value: function componentDidUpdate() {
-	            if (this.props.players && this.props.you && this.props.is_switch_time) {
-	                var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
+	            var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
 
-	                var node = _reactDom2.default.findDOMNode(this.refs.root);
-	                var editor = ace.edit(node);
-	                editor.setReadOnly(!enabled);
-	                editor.getSession().setMode("ace/mode/python");
-	                if (enabled) {
-	                    editor.setTheme("ace/theme/monokai");
-	                } else {
-	                    editor.setTheme("ace/theme/clouds");
-	                }
+	            var node = _reactDom2.default.findDOMNode(this.refs.root);
+	            var editor = ace.edit(node);
+	            editor.setReadOnly(!enabled);
+	            editor.getSession().setMode("ace/mode/python");
+	            if (enabled) {
+	                editor.setTheme("ace/theme/monokai");
+	            } else {
+	                editor.setTheme("ace/theme/clouds");
 	            }
 	        }
 	    }, {
@@ -24213,7 +24211,7 @@
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
 	        players: state.round.player_ordering,
-	        you: state.players.you,
+	        you: state.players.you.you,
 	        is_switch_time: state.round.is_switch_time
 	    };
 	};
