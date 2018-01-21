@@ -12,28 +12,24 @@ import {startRound, timeTick} from './actions/round.js'
 
 const rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
-store.dispatch(playerYou(0));
-store.dispatch(playerUpdate({
-    0: 'Thi',
-    1: 'Nik',
-    2: 'Hit',
-    3: 'Rish'
-}));
+//store.dispatch(playerYou(0));
+//store.dispatch(playerUpdate({
+    //0: 'Thi',
+    //1: 'Nik',
+    //2: 'Hit',
+    //3: 'Rish'
+//}));
 
-let round = {
-    starttime_utc : new Date().getTime(),
-    //switch_time : 5,
-    //dead_time : 5,
-    time_limit : 100,
-    player_ordering : [0, 1, 3, 2],
-    problem : 'Sort a list!',
-    test_case_inputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]'],
-    test_case_outputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
-}
+//let round = {
+    //starttime_utc : new Date().getTime(),
+    //time_limit : 100,
+    //player_ordering : [0, 1, 3, 2],
+    //problem : 'Sort a list!',
+    //test_case_inputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]'],
+    //test_case_outputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
+//}
 
-store.dispatch(startRound(round));
-
-setInterval(() => store.dispatch(timeTick()), 1000);
+//store.dispatch(startRound(round));
 
 class App extends Component {
   render() {

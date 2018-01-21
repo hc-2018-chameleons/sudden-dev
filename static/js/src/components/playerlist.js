@@ -8,40 +8,44 @@ class PlayerList extends Component {
     }
 
     render() {
-        const player_sidebar_limit = Object.keys(this.props.players).length;
-        let player_buttons = []
-        let ids = []
+        if (this.props.players && this.props.player_inds && this.props.you) {
+            const player_sidebar_limit = this.props.player_inds.length;
+            let player_buttons = []
+            let ids = []
 
-        for (let i = 0; i < player_sidebar_limit; i++) {
-            let index = this.props.player_inds[i % this.props.player_inds.length];
-            player_buttons.push(this.props.players[index]);
+            for (let i = 0; i < player_sidebar_limit; i++) {
+                let index = this.props.player_inds[i % this.props.player_inds.length];
+                player_buttons.push(this.props.players[index]);
 
-            /* Highlight current player */
-            if (index == this.props.you) {
-                ids.push('player-current-button');
-            } else {
-                ids.push('player-button');
-            }
-        }
-        return (
-        <div>
-            <h2 id="players-tag">Players</h2>
-            <ul>
-                {
-                    //TODO: make this into buttons or sth
-                    player_buttons.map(function(data, i) {
-                        return <button id={ids[i]} type="button" className="btn btn-primary" key={i}>{data}</button>
-                    })
+                /* Highlight current player */
+                if (index == this.props.you) {
+                    ids.push('player-current-button');
+                } else {
+                    ids.push('player-button');
                 }
-            </ul>
-        </div>
-        );
+            }
+            return (
+            <div>
+                <h2 id="players-tag">Players</h2>
+                <ul>
+                    {
+                        //TODO: make this into buttons or sth
+                        player_buttons.map(function(data, i) {
+                            return <button id={ids[i]} type="button" className="btn btn-primary" key={i}>{data}</button>
+                        })
+                    }
+                </ul>
+            </div>
+            );
+        } else {
+            return <h1>Waiting for players</h1>
+        }
     }
 }
 
 const mapStateToProps = (state) => ({
     player_inds: state.round.player_ordering,
-    players: state.players.players,
+    players: state.players.players.players,
     you: state.players.you
 });
 

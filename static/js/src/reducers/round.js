@@ -18,28 +18,31 @@ function shiftPlayerList(switch_time, dead_time, elapsed, time_limit, order) {
 export default function roundReducer(state = [], action) {
   switch (action.type) {
     case actions.START_ROUND:
-      let utc = new Date().getTime();
-      let elapsed = utc - action.round.starttime_utc;
-      let current_time = action.round.time_limit - elapsed;
+      let utc = Math.round(new Date().getTime() / 1000);
+      let elapsed = utc - action.round.round.starttime_utc;
+      if (elapsed < 0) {
+          elapsed = 0;
+      }
+      let current_time = action.round.round.time_limit - elapsed;
 
       let switch_time = 5;
       let dead_time = 5;
 
-      let players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.time_limit, action.round.player_ordering);
+      let players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.round.time_limit, action.round.round.player_ordering);
 
       let turn_time = elapsed % (switch_time + dead_time);
       let is_sw_time = turn_time >= dead_time;
 
       return Object.assign({}, state, {
-          starttime_utc : action.round.starttime_utc,
-          time_limit : action.round.time_limit,
+          starttime_utc : action.round.round.starttime_utc,
+          time_limit : action.round.round.time_limit,
           switch_time : switch_time,
           dead_time : dead_time,
-          player_ordering : action.round.player_ordering,
-          problem : action.round.problem,
+          player_ordering : action.round.round.player_ordering,
+          problem : action.round.round.problem,
 
-          test_case_inputs : action.round.test_case_inputs,
-          test_case_outputs : action.round.test_case_outputs,
+          test_case_inputs : action.round.round.test_case_inputs,
+          test_case_outputs : action.round.round.test_case_outputs,
 
           current_time : current_time,
           is_switch_time : is_sw_time

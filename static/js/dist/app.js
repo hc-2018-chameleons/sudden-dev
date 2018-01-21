@@ -96,30 +96,24 @@
 
 	var rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
-	_store2.default.dispatch((0, _player.playerYou)(0));
-	_store2.default.dispatch((0, _player.playerUpdate)({
-	    0: 'Thi',
-	    1: 'Nik',
-	    2: 'Hit',
-	    3: 'Rish'
-	}));
+	//store.dispatch(playerYou(0));
+	//store.dispatch(playerUpdate({
+	//0: 'Thi',
+	//1: 'Nik',
+	//2: 'Hit',
+	//3: 'Rish'
+	//}));
 
-	var round = {
-	    starttime_utc: new Date().getTime(),
-	    //switch_time : 5,
-	    //dead_time : 5,
-	    time_limit: 100,
-	    player_ordering: [0, 1, 3, 2],
-	    problem: 'Sort a list!',
-	    test_case_inputs: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]'],
-	    test_case_outputs: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
-	};
+	//let round = {
+	//starttime_utc : new Date().getTime(),
+	//time_limit : 100,
+	//player_ordering : [0, 1, 3, 2],
+	//problem : 'Sort a list!',
+	//test_case_inputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]'],
+	//test_case_outputs : ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
+	//}
 
-	_store2.default.dispatch((0, _round.startRound)(round));
-
-	setInterval(function () {
-	    return _store2.default.dispatch((0, _round.timeTick)());
-	}, 1000);
+	//store.dispatch(startRound(round));
 
 	var App = function (_Component) {
 	    _inherits(App, _Component);
@@ -23546,28 +23540,31 @@
 
 	    switch (action.type) {
 	        case actions.START_ROUND:
-	            var utc = new Date().getTime();
-	            var elapsed = utc - action.round.starttime_utc;
-	            var current_time = action.round.time_limit - elapsed;
+	            var utc = Math.round(new Date().getTime() / 1000);
+	            var elapsed = utc - action.round.round.starttime_utc;
+	            if (elapsed < 0) {
+	                elapsed = 0;
+	            }
+	            var current_time = action.round.round.time_limit - elapsed;
 
 	            var switch_time = 5;
 	            var dead_time = 5;
 
-	            var players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.time_limit, action.round.player_ordering);
+	            var players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.round.time_limit, action.round.round.player_ordering);
 
 	            var turn_time = elapsed % (switch_time + dead_time);
 	            var is_sw_time = turn_time >= dead_time;
 
 	            return Object.assign({}, state, {
-	                starttime_utc: action.round.starttime_utc,
-	                time_limit: action.round.time_limit,
+	                starttime_utc: action.round.round.starttime_utc,
+	                time_limit: action.round.round.time_limit,
 	                switch_time: switch_time,
 	                dead_time: dead_time,
-	                player_ordering: action.round.player_ordering,
-	                problem: action.round.problem,
+	                player_ordering: action.round.round.player_ordering,
+	                problem: action.round.round.problem,
 
-	                test_case_inputs: action.round.test_case_inputs,
-	                test_case_outputs: action.round.test_case_outputs,
+	                test_case_inputs: action.round.round.test_case_inputs,
+	                test_case_outputs: action.round.round.test_case_outputs,
 
 	                current_time: current_time,
 	                is_switch_time: is_sw_time
@@ -23650,6 +23647,10 @@
 
 	var server_actions = _interopRequireWildcard(_WSServerActions);
 
+	var _player = __webpack_require__(211);
+
+	var _round = __webpack_require__(213);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	var socketMiddleware = function () {
@@ -23686,6 +23687,21 @@
 	      switch (payload.type) {
 	        case server_actions.WS_HEALTH:
 	          store.dispatch(server_actions.wsHealth(status));
+	          break;
+
+	        case _player.PLAYER_UPDATE:
+	          store.dispatch((0, _player.playerUpdate)(payload));
+	          break;
+
+	        case _player.PLAYER_YOU:
+	          store.dispatch((0, _player.playerYou)(payload));
+	          break;
+
+	        case _round.START_ROUND:
+	          store.dispatch((0, _round.startRound)(payload));
+	          setInterval(function () {
+	            return store.dispatch((0, _round.timeTick)());
+	          }, 1000);
 	          break;
 
 	        default:
@@ -23801,43 +23817,51 @@
 	    _createClass(PlayerList, [{
 	        key: 'render',
 	        value: function render() {
-	            var player_sidebar_limit = Object.keys(this.props.players).length;
-	            var player_buttons = [];
-	            var ids = [];
+	            if (this.props.players && this.props.player_inds && this.props.you) {
+	                var player_sidebar_limit = this.props.player_inds.length;
+	                var player_buttons = [];
+	                var ids = [];
 
-	            for (var i = 0; i < player_sidebar_limit; i++) {
-	                var index = this.props.player_inds[i % this.props.player_inds.length];
-	                player_buttons.push(this.props.players[index]);
+	                for (var i = 0; i < player_sidebar_limit; i++) {
+	                    var index = this.props.player_inds[i % this.props.player_inds.length];
+	                    player_buttons.push(this.props.players[index]);
 
-	                /* Highlight current player */
-	                if (index == this.props.you) {
-	                    ids.push('player-current-button');
-	                } else {
-	                    ids.push('player-button');
+	                    /* Highlight current player */
+	                    if (index == this.props.you) {
+	                        ids.push('player-current-button');
+	                    } else {
+	                        ids.push('player-button');
+	                    }
 	                }
-	            }
-	            return _react2.default.createElement(
-	                'div',
-	                null,
-	                _react2.default.createElement(
-	                    'h2',
-	                    { id: 'players-tag' },
-	                    'Players'
-	                ),
-	                _react2.default.createElement(
-	                    'ul',
+	                return _react2.default.createElement(
+	                    'div',
 	                    null,
+	                    _react2.default.createElement(
+	                        'h2',
+	                        { id: 'players-tag' },
+	                        'Players'
+	                    ),
+	                    _react2.default.createElement(
+	                        'ul',
+	                        null,
 
-	                    //TODO: make this into buttons or sth
-	                    player_buttons.map(function (data, i) {
-	                        return _react2.default.createElement(
-	                            'button',
-	                            { id: ids[i], type: 'button', className: 'btn btn-primary', key: i },
-	                            data
-	                        );
-	                    })
-	                )
-	            );
+	                        //TODO: make this into buttons or sth
+	                        player_buttons.map(function (data, i) {
+	                            return _react2.default.createElement(
+	                                'button',
+	                                { id: ids[i], type: 'button', className: 'btn btn-primary', key: i },
+	                                data
+	                            );
+	                        })
+	                    )
+	                );
+	            } else {
+	                return _react2.default.createElement(
+	                    'h1',
+	                    null,
+	                    'Waiting for players'
+	                );
+	            }
 	        }
 	    }]);
 
@@ -23847,7 +23871,7 @@
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
 	        player_inds: state.round.player_ordering,
-	        players: state.players.players,
+	        players: state.players.players.players,
 	        you: state.players.you
 	    };
 	};
@@ -23888,10 +23912,7 @@
 	    function ProblemBar(props) {
 	        _classCallCheck(this, ProblemBar);
 
-	        var _this = _possibleConstructorReturn(this, (ProblemBar.__proto__ || Object.getPrototypeOf(ProblemBar)).call(this, props));
-
-	        console.log(props);
-	        return _this;
+	        return _possibleConstructorReturn(this, (ProblemBar.__proto__ || Object.getPrototypeOf(ProblemBar)).call(this, props));
 	    }
 
 	    _createClass(ProblemBar, [{
@@ -23971,7 +23992,6 @@
 	        var _this = _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
 
 	        _this.state = { code: '' };
-	        console.log(props);
 	        return _this;
 	    }
 
@@ -23985,66 +24005,74 @@
 	        value: function render() {
 	            var _this2 = this;
 
-	            var current_player = this.props.players[this.props.player_ordering[0]];
-	            if (this.props.is_switch_time) {
-	                var message = "It's " + current_player + "'s turn!";
-	            } else {
-	                var message = "Get ready, " + current_player + "!";
-	            }
-	            return _react2.default.createElement(
-	                'div',
-	                null,
-	                _react2.default.createElement(
-	                    'h2',
-	                    { id: 'test-cases-tag' },
-	                    'Test Cases'
-	                ),
-	                this.props.test_case_inputs.map(function (data, i) {
-	                    return _react2.default.createElement(
-	                        'button',
-	                        { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
-	                        'Test case: ',
-	                        i + 1
-	                    );
-	                }),
-	                _react2.default.createElement(
+	            if (this.props.time_limit && this.props.players && this.props.player_ordering) {
+	                var current_player = this.props.players[this.props.player_ordering[0]];
+	                if (this.props.is_switch_time) {
+	                    var message = "It's " + current_player + "'s turn!";
+	                } else {
+	                    var message = "Get ready, " + current_player + "!";
+	                }
+	                return _react2.default.createElement(
 	                    'div',
 	                    null,
 	                    _react2.default.createElement(
-	                        'button',
-	                        { id: 'run-button', type: 'button', className: 'btn btn-danger', onClick: function onClick() {
-	                                return (0, _skulptRun2.default)(_this2.state.code);
-	                            } },
-	                        'Run'
+	                        'h2',
+	                        { id: 'test-cases-tag' },
+	                        'Test Cases'
+	                    ),
+	                    this.props.test_case_inputs.map(function (data, i) {
+	                        return _react2.default.createElement(
+	                            'button',
+	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
+	                            'Test case: ',
+	                            i + 1
+	                        );
+	                    }),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        _react2.default.createElement(
+	                            'button',
+	                            { id: 'run-button', type: 'button', className: 'btn btn-danger', onClick: function onClick() {
+	                                    return (0, _skulptRun2.default)(_this2.state.code);
+	                                } },
+	                            'Run'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { id: 'turn-duration' },
+	                        _react2.default.createElement(
+	                            'p',
+	                            { id: 'clock-text' },
+	                            this.props.current_time,
+	                            '/',
+	                            this.props.time_limit
+	                        ),
+	                        _react2.default.createElement(
+	                            'p',
+	                            { id: 'whos-turn' },
+	                            message
+	                        ),
+	                        'starttime ',
+	                        this.props.starttime_utc,
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'switchtime ',
+	                        this.props.switch_time,
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        'deadtime ',
+	                        this.props.dead_time
 	                    )
-	                ),
-	                _react2.default.createElement(
-	                    'div',
-	                    { id: 'turn-duration' },
-	                    _react2.default.createElement(
-	                        'p',
-	                        { id: 'clock-text' },
-	                        this.props.current_time,
-	                        '/',
-	                        this.props.time_limit
-	                    ),
-	                    _react2.default.createElement(
-	                        'p',
-	                        { id: 'whos-turn' },
-	                        message
-	                    ),
-	                    'starttime ',
-	                    this.props.starttime_utc,
-	                    ' ',
-	                    _react2.default.createElement('br', null),
-	                    'switchtime ',
-	                    this.props.switch_time,
-	                    ' ',
-	                    _react2.default.createElement('br', null),
-	                    'deadtime ',
-	                    this.props.dead_time
-	                )
-	            );
+	                );
+	            } else {
+	                return _react2.default.createElement(
+	                    'h1',
+	                    null,
+	                    'Waiting for players'
+	                );
+	            }
 	        }
 	    }]);
 
@@ -24064,7 +24092,7 @@
 	        test_case_outputs: state.round.test_case_outputs,
 	        is_switch_time: state.round.is_switch_time,
 
-	        players: state.players.players,
+	        players: state.players.players.players,
 	        you: state.players.you
 	    };
 	};
@@ -24158,16 +24186,18 @@
 	    _createClass(BaseEditor, [{
 	        key: 'componentDidUpdate',
 	        value: function componentDidUpdate() {
-	            var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
+	            if (this.props.players && this.props.you && this.props.is_switch_time) {
+	                var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
 
-	            var node = _reactDom2.default.findDOMNode(this.refs.root);
-	            var editor = ace.edit(node);
-	            editor.setReadOnly(!enabled);
-	            editor.getSession().setMode("ace/mode/python");
-	            if (enabled) {
-	                editor.setTheme("ace/theme/monokai");
-	            } else {
-	                editor.setTheme("ace/theme/clouds");
+	                var node = _reactDom2.default.findDOMNode(this.refs.root);
+	                var editor = ace.edit(node);
+	                editor.setReadOnly(!enabled);
+	                editor.getSession().setMode("ace/mode/python");
+	                if (enabled) {
+	                    editor.setTheme("ace/theme/monokai");
+	                } else {
+	                    editor.setTheme("ace/theme/clouds");
+	                }
 	            }
 	        }
 	    }, {

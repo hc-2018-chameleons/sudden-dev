@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 class ProblemBar extends Component {
     constructor(props) {
         super(props);
-        console.log(props);
     }
 
     render() {

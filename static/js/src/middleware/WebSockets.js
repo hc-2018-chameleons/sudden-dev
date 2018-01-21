@@ -1,6 +1,9 @@
 import * as client_actions from "./../actions/WSClientActions";
 import * as server_actions from "./../actions/WSServerActions";
 
+import {PLAYER_UPDATE, PLAYER_YOU, playerUpdate, playerYou} from "./../actions/player.js"
+import {START_ROUND, startRound, timeTick} from "./../actions/round.js"
+
 const socketMiddleware = (function () {
   let socket = null;
 
@@ -30,6 +33,19 @@ const socketMiddleware = (function () {
     switch (payload.type) {
       case server_actions.WS_HEALTH:
         store.dispatch(server_actions.wsHealth(status));
+        break;
+
+      case PLAYER_UPDATE:
+        store.dispatch(playerUpdate(payload));
+        break;
+
+      case PLAYER_YOU:
+        store.dispatch(playerYou(payload));
+        break;
+
+      case START_ROUND:
+        store.dispatch(startRound(payload));
+        setInterval(() => store.dispatch(timeTick()), 1000);
         break;
 
       default:
