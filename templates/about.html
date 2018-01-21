@@ -1,20 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Sudden Dev</h1>
-  <p class="deck">
+
+  <div id="join-page-title">
+      <h1>Sudden Dev</h1>
+  </div>
+  <h4 id="join-subtitle">
     Code Relay Hackerrank Thingy
-  </p>
-  <p>
+</h4>
+  <div id="join-form">
     <form id="name-form">
     <input id="name-field">
-    <a class="button button-primary" onClick="handleNewRoom()">Create new chat room</a>
+    <a class="button button-primary" onClick="handleNewRoom()"><button id="join-button" type="button" className="btn btn-primary">Join this room</button></a>
     </form>
-  </p>
-  <p class="quiet">
-    Or, you can visit <code>{{ request.scheme }}://{{ request.get_host }}/any-path-you-want</code> 
+    <div id="big-or">
+        OR:
+    </div>
+    <form id="join-random-form">
+        <a class="button button-primary" onClick="handleNewRoom()"><button id="join-button" type="button" className="btn btn-primary">Join a random room</button></a>
+    </form>
+  </div>
+
+
+  <!--<div id="footnote" class="quiet">
+    Or, you can visit <code>{{ request.scheme }}://{{ request.get_host }}/any-path-you-want</code>
     to create a arbitrary room or join one whose name you know.
-  </p>
+</div>-->
 
   <script>
     function handleNewRoom() {
@@ -23,4 +34,4 @@
       window.open({% url 'new_room'%})
     }
   </script>
-{% endblock content %} 
+{% endblock content %}

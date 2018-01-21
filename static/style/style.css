@@ -171,21 +171,27 @@ body, html {
 }
 
 @keyframes flashBlackRed {
-    from {
-        background-color: red;
-        color: black;
-    }
-    to {
-        background-color: black;
-        color: red;}
+    0% {background-color: red; color: black}
+    8.3% {background-color: black; color: red}
+    16.6% {background-color: red; color: black}
+    24.9% {background-color: black; color: red}
+    33.2% {background-color: red; color: black}
+    41.5% {background-color: black; color: red}
+    49.8% {background-color: red; color: black}
+    58.1% {background-color: black; color: red}
+    66.4% {background-color: red; color: black}
+    74.7% {background-color: black; color: red}
+    83% {background-color: white; color: green}
+    88.7% {background-color: green; color: white}
+    94.4 {background-color: white; color: green}
+    100% {background-color: green; color: white}
 }
+
 
 #turn-duration {
     text-align: center;
     height: auto;
-    animation-name: flashBlackRed;
-    animation-duration: 1s;
-    animation-iteration-count: 5;
+    animation: flashBlackRed 6s;
 }
 
 #clock-text {
@@ -240,6 +246,16 @@ body, html {
     white-space: normal;
 }
 
+#test-case-pass {
+    background-color: green;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%;
+    height: 10%;
+    border: 1px solid black;
+    white-space: normal;
+}
+
 #problem-bar {
     display: block;
     width: 40%;
@@ -258,4 +274,37 @@ body, html {
 
 #time-lines {
     margin: 0em;
+}
+
+#join-page {
+    height: 100%;
+    background-color: rgb(20, 20, 20);
+    color: white;
+}
+
+#join-page-title {
+    text-align: center;
+    margin-top: 2%;
+}
+
+#join-subtitle {
+    text-align: center;
+    margin-top: 2%;
+}
+
+#join-form {
+    padding-top: 10%;
+    text-align: center;
+}
+
+#footnote {
+    text-align: center;
+    position: absolute;
+    bottom: 2%;
+    padding-left: 2%;
+}
+
+#big-or {
+    padding-top: 1%;
+    padding-bottom: 1%;
 }
