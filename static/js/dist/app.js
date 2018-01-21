@@ -24172,9 +24172,9 @@
 	imported.src = 'http://www.skulpt.org/static/skulpt.min.js';
 	document.head.appendChild(imported);
 	imported = document.createElement('script');
-	imported.src = 'http://www.skulpt.org/static/skulpt-stdlib.js';
-	document.head.appendChild(imported);
-	imported = document.createElement('script');
+	// imported.src = 'http://www.skulpt.org/static/skulpt-stdlib.js';
+	// document.head.appendChild(imported);
+	// imported = document.createElement('script');
 	imported.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js';
 	document.head.appendChild(imported);
 	function outf(text) {
