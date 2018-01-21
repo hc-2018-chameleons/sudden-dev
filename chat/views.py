@@ -1,9 +1,12 @@
 import random
 import string
+import logging
 from django.db import transaction
 from django.shortcuts import render, redirect
 import haikunator
 from .models import Room
+
+log = logging.getLogger(__name__)
 
 def about(request):
     return render(request, "about.html")
@@ -32,8 +35,8 @@ def chat_room(request, label):
     # upon first visit (a la etherpad).
     room, created = Room.objects.get_or_create(label=label)
 
-    if not created and room.capacity <= 0:
-        redirect(about)
+    if room.capacity <= 0:
+        return redirect(about)
 
     return render(request, "index.html", {
         'room': room,

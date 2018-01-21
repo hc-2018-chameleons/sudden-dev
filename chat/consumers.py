@@ -117,7 +117,15 @@ def ws_disconnect(message):
     try:
         label = message.channel_session['room']
         room = Room.objects.get(label=label)
-        Group('chat-'+label, channel_layer=message.channel_layer).discard(message.reply_channel)
+        group = Group('chat-'+label, channel_layer=message.channel_layer) 
+        group.discard(message.reply_channel)
+        position = message.channel_session['position']
+        player = room.player_set.filter(position=position).first()
+        room.player_set.remove(player)
+        room.capacity += 1
+        room.save()
+        send_players_update(room, group)
+
     except (KeyError, Room.DoesNotExist):
         pass
 

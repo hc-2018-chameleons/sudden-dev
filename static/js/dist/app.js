@@ -74,11 +74,11 @@
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 
-	var _editor = __webpack_require__(219);
+	var _editor = __webpack_require__(220);
 
 	var _editor2 = _interopRequireDefault(_editor);
 
-	var _WebSocketConnection = __webpack_require__(220);
+	var _WebSocketConnection = __webpack_require__(221);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
 
@@ -23666,9 +23666,8 @@
 	  };
 
 	  function sendName() {
-	    name = document.cookie.match(new RegExp('name' + '=([^;]+)'))[1];
 	    var message = {
-	      player_name: name
+	      player_name: prompt("Enter your display name:", "anon")
 	    };
 	    socket.send(JSON.stringify(message));
 	  };
@@ -23977,7 +23976,7 @@
 
 	var _reactRedux = __webpack_require__(159);
 
-	var _skulptRun = __webpack_require__(221);
+	var _skulptRun = __webpack_require__(219);
 
 	var _skulptRun2 = _interopRequireDefault(_skulptRun);
 
@@ -24106,6 +24105,49 @@
 
 /***/ }),
 /* 219 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = runit;
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
+	function outf(text) {
+	    console.log("Program Output: " + text);
+	}
+
+	function builtinRead(x) {
+	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
+	    return Sk.builtinFiles["files"][x];
+	}
+
+	function runit(prog, test_input, expected_output) {
+	    //TODO: Use expected output
+	    console.log(expected_output);
+	    Sk.configure({
+	        output: outf,
+	        read: builtinRead
+	    });
+	    var functionCall = prog;
+	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
+	    console.log(functionCall);
+	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+	    var myPromise = Sk.misceval.asyncToPromise(function () {
+	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
+	    });
+	    myPromise.then(function (mod) {
+	        console.log('Compiled successfully');
+	    }, function (err) {
+	        console.log("Program didn't compile!");
+	        console.log(err.toString());
+	    });
+	}
+
+/***/ }),
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24183,7 +24225,7 @@
 	exports.default = Editor;
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24252,49 +24294,6 @@
 	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
-
-/***/ }),
-/* 221 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = runit;
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
-	function outf(text) {
-	    console.log("Program Output: " + text);
-	}
-
-	function builtinRead(x) {
-	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
-	    return Sk.builtinFiles["files"][x];
-	}
-
-	function runit(prog, test_input, expected_output) {
-	    //TODO: Use expected output
-	    console.log(expected_output);
-	    Sk.configure({
-	        output: outf,
-	        read: builtinRead
-	    });
-	    var functionCall = prog;
-	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
-	    console.log(functionCall);
-	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-	    var myPromise = Sk.misceval.asyncToPromise(function () {
-	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
-	    });
-	    myPromise.then(function (mod) {
-	        console.log('Compiled successfully');
-	    }, function (err) {
-	        console.log("Program didn't compile!");
-	        console.log(err.toString());
-	    });
-	}
 
 /***/ })
 /******/ ]);

@@ -17,9 +17,8 @@ const socketMiddleware = (function () {
   };
 
   function sendName() {
-      name = document.cookie.match(new RegExp('name' + '=([^;]+)'))[1];
       var message = {
-          player_name : name
+	player_name : prompt("Enter your display name:", "anon")
       }
       socket.send(JSON.stringify(message));
   };
