@@ -30,7 +30,7 @@ class Sidebar extends Component {
             <h2 id="test-cases-tag">Test Cases</h2>
                 {
                     this.props.test_case_inputs.map(function(data, i) {
-                        return <button id="test-case" type="button" className="btn btn-primary" key={i}>Test case: {i+1}</button>
+                        return <button id="test-case" type="button" className="btn btn-primary" onClick={() => runit(this.state.code)} key={i}>Run test case {i+1}</button>
                     })
                 }
             <div>
@@ -39,7 +39,7 @@ class Sidebar extends Component {
                         return <button id="player-button" type="button" className="btn btn-warning" key={i}>See {data}s code</button>
                     })
                 }*/}
-                <button id="run-button" type="button" className="btn btn-danger" onClick={() => runit(this.state.code)}>Run</button>
+                {/*{<button id="run-button" type="button" className="btn btn-danger" onClick={() => runit(this.state.code)}>Run</button>*/}
             </div>
 
 
@@ -55,7 +55,7 @@ class Sidebar extends Component {
                 switchtime {this.props.switch_time} <br/>
                 deadtime {this.props.dead_time}
 
-                </div>
+            </div>
             </div>
             );
         } else {

@@ -92,6 +92,17 @@ body, html {
     height: 10%;
     border: 1px solid black;
     white-space: normal;
+    transition-duration: 0.3s
+}
+
+#player-current-button:hover {
+    background-color: #BB2211;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 95%;
+    height: 10%;
+    border: 1px solid black;
+    white-space: normal;
 }
 
 #player-button {
@@ -101,15 +112,6 @@ body, html {
     border: 1px solid black;
     white-space: normal;
     transition-duration: 0.3s
-}
-
-#player-current-button:hover {
-    background-color: #BB2211;
-    margin-bottom: 10px;
-    width: 85%;
-    height: 10%;
-    border: 1px solid black;
-    white-space: normal;
 }
 
 #player-button:hover {
@@ -155,7 +157,7 @@ body, html {
 #run-button:hover {
     margin-top: 10px;
     margin-bottom: 10px;
-    width: 95%;
+    width: 100%;
     height: 10%;
     border: 1px solid black;
     white-space: normal;
@@ -220,7 +222,19 @@ body, html {
 #test-case {
     align-items: center;
     margin-bottom: 10px;
-    width: 90%;
+    width: 95%;
+    height: 10%;
+    border: 1px solid black;
+    white-space: normal;
+    transition-duration: 0.3s;
+}
+
+#test-case:hover {
+    background-color: #BB2211;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
     height: 10%;
     border: 1px solid black;
     white-space: normal;

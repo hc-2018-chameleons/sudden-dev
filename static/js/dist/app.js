@@ -24014,8 +24014,6 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this2 = this;
-
 	            if (this.props.time_limit && this.props.players && this.props.player_ordering) {
 	                var current_player = this.props.players[this.props.player_ordering[0]];
 	                if (this.props.is_switch_time) {
@@ -24032,24 +24030,18 @@
 	                        'Test Cases'
 	                    ),
 	                    this.props.test_case_inputs.map(function (data, i) {
+	                        var _this2 = this;
+
 	                        return _react2.default.createElement(
 	                            'button',
-	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
-	                            'Test case: ',
+	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', onClick: function onClick() {
+	                                    return (0, _skulptRun2.default)(_this2.state.code);
+	                                }, key: i },
+	                            'Run test case ',
 	                            i + 1
 	                        );
 	                    }),
-	                    _react2.default.createElement(
-	                        'div',
-	                        null,
-	                        _react2.default.createElement(
-	                            'button',
-	                            { id: 'run-button', type: 'button', className: 'btn btn-danger', onClick: function onClick() {
-	                                    return (0, _skulptRun2.default)(_this2.state.code);
-	                                } },
-	                            'Run'
-	                        )
-	                    ),
+	                    _react2.default.createElement('div', null),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { id: 'turn-duration' },
