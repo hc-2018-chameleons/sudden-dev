@@ -8,13 +8,12 @@ class BaseEditor extends Component {
     }
 
     componentDidUpdate() {
-        //TODO:yadadaydyad
-        let enabled = this.props.players[0] == 'Thi' && this.props.is_switch_time;
+        let enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
 
         const node = ReactDOM.findDOMNode(this.refs.root);
         const editor = ace.edit(node);
         editor.setReadOnly(!enabled);
-        editor.getSession().setMode("ace/mode/javascript");
+        editor.getSession().setMode("ace/mode/python");
         if (enabled) {
             editor.setTheme("ace/theme/monokai");
         } else {
@@ -31,6 +30,7 @@ class BaseEditor extends Component {
 
 const mapStateToProps = (state) => ({
     players: state.round.player_ordering,
+    you: state.players.you,
     is_switch_time: state.round.is_switch_time
 });
 

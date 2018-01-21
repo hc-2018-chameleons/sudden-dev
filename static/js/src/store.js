@@ -4,7 +4,11 @@ import wsMiddleware from "./middleware/WebSockets";
 
 const initial = {
     ws: {host: []},
-    players: []
+    players: {
+        players: {},
+        you: 0
+    },
+    round: {}
 }
 
 let store = createStore(

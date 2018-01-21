@@ -1,15 +1,13 @@
 import * as actions from "../actions/round";
 
 // Synchronize player order list
-function shiftPlayerList(elapsed, action) {
-    let sw_time = action.round.switch_time;
-    let d_time = action.round.dead_time;
-    let no_of_turns = Math.floor(action.round.time_limit / (sw_time + d_time));
+function shiftPlayerList(switch_time, dead_time, elapsed, time_limit, order) {
+    let no_of_turns = Math.floor(time_limit / (switch_time + dead_time));
 
-    let cur_turn = Math.floor(elapsed / action.round.time_limit * no_of_turns);
-    let cur_player = cur_turn % action.round.player_ordering.length;
+    let cur_turn = Math.floor(elapsed / time_limit * no_of_turns);
+    let cur_player = cur_turn % order.length;
 
-    let players = action.round.player_ordering;
+    let players = order;
     for (let i = 0; i < cur_player; i++) {
         players.push(players.shift());
     }
@@ -24,19 +22,24 @@ export default function roundReducer(state = [], action) {
       let elapsed = utc - action.round.starttime_utc;
       let current_time = action.round.time_limit - elapsed;
 
-      let players = shiftPlayerList(elapsed, action);
+      let switch_time = 5;
+      let dead_time = 5;
 
-      let turn_time = elapsed % (action.round.switch_time + action.round.dead_time);
-      let is_sw_time = turn_time >= action.round.dead_time;
+      let players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.time_limit, action.round.player_ordering);
+
+      let turn_time = elapsed % (switch_time + dead_time);
+      let is_sw_time = turn_time >= dead_time;
 
       return Object.assign({}, state, {
           starttime_utc : action.round.starttime_utc,
           time_limit : action.round.time_limit,
-          switch_time : action.round.switch_time,
-          dead_time : action.round.dead_time,
-          player_ordering : players,
+          switch_time : switch_time,
+          dead_time : dead_time,
+          player_ordering : action.round.player_ordering,
           problem : action.round.problem,
-          test_cases : action.round.test_cases,
+
+          test_case_inputs : action.round.test_case_inputs,
+          test_case_outputs : action.round.test_case_outputs,
 
           current_time : current_time,
           is_switch_time : is_sw_time
@@ -66,7 +69,8 @@ export default function roundReducer(state = [], action) {
           switch_time : state.switch_time,
           dead_time : state.dead_time,
           problem : state.problem,
-          test_cases : state.test_cases,
+          test_case_inputs : state.test_case_inputs,
+          test_case_outputs : state.test_case_outputs,
           player_ordering : player_order,
 
           current_time : newtime,

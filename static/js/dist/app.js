@@ -74,11 +74,11 @@
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 
-	var _editor = __webpack_require__(219);
+	var _editor = __webpack_require__(220);
 
 	var _editor2 = _interopRequireDefault(_editor);
 
-	var _WebSocketConnection = __webpack_require__(220);
+	var _WebSocketConnection = __webpack_require__(221);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
 
@@ -96,18 +96,23 @@
 
 	var rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
-	_store2.default.dispatch((0, _player.playerAdd)('Thi'));
-	_store2.default.dispatch((0, _player.playerAdd)('Nik'));
-	_store2.default.dispatch((0, _player.playerAdd)('FistOfHit'));
-	_store2.default.dispatch((0, _player.playerAdd)('wakeuprj'));
+	_store2.default.dispatch((0, _player.playerYou)(0));
+	_store2.default.dispatch((0, _player.playerUpdate)({
+	    0: 'Thi',
+	    1: 'Nik',
+	    2: 'Hit',
+	    3: 'Rish'
+	}));
+
 	var round = {
 	    starttime_utc: new Date().getTime(),
-	    switch_time: 5,
-	    dead_time: 5,
+	    //switch_time : 5,
+	    //dead_time : 5,
 	    time_limit: 100,
-	    player_ordering: ['Thi', 'Nik', 'FistOfHit', 'wakeuprj'],
+	    player_ordering: [0, 1, 3, 2],
 	    problem: 'Sort a list!',
-	    test_cases: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
+	    test_case_inputs: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]'],
+	    test_case_outputs: ['[1,2,3,4]', '[4,3,2,1]', '[4564,2,a,hello]']
 	};
 
 	_store2.default.dispatch((0, _round.startRound)(round));
@@ -23310,7 +23315,7 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 
 	var _redux = __webpack_require__(179);
@@ -23324,8 +23329,12 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var initial = {
-	  ws: { host: [] },
-	  players: []
+	    ws: { host: [] },
+	    players: {
+	        players: {},
+	        you: 0
+	    },
+	    round: {}
 	};
 
 	var store = (0, _redux.createStore)(_reducers.reducers, initial, (0, _redux.applyMiddleware)(_WebSockets2.default));
@@ -23456,19 +23465,23 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 	function playerReducer() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	  var action = arguments[1];
 
 	  console.log(action.type);
 	  switch (action.type) {
-	    case actions.PLAYER_ADD:
-	      return [].concat(_toConsumableArray(state), [{ player: action.player }]);
+	    case actions.PLAYER_UPDATE:
+	      return Object.assign({}, state, {
+	        players: action.players,
+	        you: state.you
+	      });
 
-	    case actions.PLAYER_REMOVE:
-	      return [].concat(_toConsumableArray(state), [{ player: action.player }]);
+	    case actions.PLAYER_YOU:
+	      return Object.assign({}, state, {
+	        players: state.players,
+	        you: action.you
+	      });
 
 	    default:
 	      return state;
@@ -23484,15 +23497,15 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var PLAYER_ADD = exports.PLAYER_ADD = "PLAYER_ADD";
-	var PLAYER_REMOVE = exports.PLAYER_REMOVE = "PLAYER_REMOVE";
+	var PLAYER_UPDATE = exports.PLAYER_UPDATE = "PLAYER_UPDATE";
+	var PLAYER_YOU = exports.PLAYER_YOU = "PLAYER_YOU";
 
-	var playerAdd = exports.playerAdd = function playerAdd(player) {
-	  return { type: PLAYER_ADD, player: player };
+	var playerUpdate = exports.playerUpdate = function playerUpdate(players) {
+	  return { type: PLAYER_UPDATE, players: players };
 	};
 
-	var playerRemove = exports.playerRemove = function playerRemove(player) {
-	  return { type: PLAYER_REMOVE, player: player };
+	var playerYou = exports.playerYou = function playerYou(id) {
+	  return { type: PLAYER_YOU, you: id };
 	};
 
 /***/ }),
@@ -23513,15 +23526,13 @@
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	// Synchronize player order list
-	function shiftPlayerList(elapsed, action) {
-	    var sw_time = action.round.switch_time;
-	    var d_time = action.round.dead_time;
-	    var no_of_turns = Math.floor(action.round.time_limit / (sw_time + d_time));
+	function shiftPlayerList(switch_time, dead_time, elapsed, time_limit, order) {
+	    var no_of_turns = Math.floor(time_limit / (switch_time + dead_time));
 
-	    var cur_turn = Math.floor(elapsed / action.round.time_limit * no_of_turns);
-	    var cur_player = cur_turn % action.round.player_ordering.length;
+	    var cur_turn = Math.floor(elapsed / time_limit * no_of_turns);
+	    var cur_player = cur_turn % order.length;
 
-	    var players = action.round.player_ordering;
+	    var players = order;
 	    for (var i = 0; i < cur_player; i++) {
 	        players.push(players.shift());
 	    }
@@ -23539,19 +23550,24 @@
 	            var elapsed = utc - action.round.starttime_utc;
 	            var current_time = action.round.time_limit - elapsed;
 
-	            var players = shiftPlayerList(elapsed, action);
+	            var switch_time = 5;
+	            var dead_time = 5;
 
-	            var turn_time = elapsed % (action.round.switch_time + action.round.dead_time);
-	            var is_sw_time = turn_time >= action.round.dead_time;
+	            var players = shiftPlayerList(switch_time, dead_time, elapsed, action.round.time_limit, action.round.player_ordering);
+
+	            var turn_time = elapsed % (switch_time + dead_time);
+	            var is_sw_time = turn_time >= dead_time;
 
 	            return Object.assign({}, state, {
 	                starttime_utc: action.round.starttime_utc,
 	                time_limit: action.round.time_limit,
-	                switch_time: action.round.switch_time,
-	                dead_time: action.round.dead_time,
-	                player_ordering: players,
+	                switch_time: switch_time,
+	                dead_time: dead_time,
+	                player_ordering: action.round.player_ordering,
 	                problem: action.round.problem,
-	                test_cases: action.round.test_cases,
+
+	                test_case_inputs: action.round.test_case_inputs,
+	                test_case_outputs: action.round.test_case_outputs,
 
 	                current_time: current_time,
 	                is_switch_time: is_sw_time
@@ -23581,7 +23597,8 @@
 	                switch_time: state.switch_time,
 	                dead_time: state.dead_time,
 	                problem: state.problem,
-	                test_cases: state.test_cases,
+	                test_case_inputs: state.test_case_inputs,
+	                test_case_outputs: state.test_case_outputs,
 	                player_ordering: player_order,
 
 	                current_time: newtime,
@@ -23775,7 +23792,10 @@
 	    function PlayerList(props) {
 	        _classCallCheck(this, PlayerList);
 
-	        return _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
+
+	        console.log(props);
+	        return _this;
 	    }
 
 	    _createClass(PlayerList, [{
@@ -23785,7 +23805,8 @@
 	            var player_buttons = [];
 
 	            for (var i = 0; i < player_sidebar_limit; i++) {
-	                player_buttons.push(this.props.players[i % this.props.players.length]);
+	                var index = this.props.player_inds[i % this.props.player_inds.length];
+	                player_buttons.push(this.props.players[index]);
 	            }
 
 	            return _react2.default.createElement(
@@ -23818,7 +23839,9 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
-	        players: state.round.player_ordering
+	        player_inds: state.round.player_ordering,
+	        players: state.players.players,
+	        you: state.players.you
 	    };
 	};
 
@@ -23911,7 +23934,7 @@
 
 	var _reactRedux = __webpack_require__(159);
 
-	var _skulptRun = __webpack_require__(221);
+	var _skulptRun = __webpack_require__(219);
 
 	var _skulptRun2 = _interopRequireDefault(_skulptRun);
 
@@ -23937,6 +23960,7 @@
 	        var _this = _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
 
 	        _this.state = { code: '' };
+	        console.log(props);
 	        return _this;
 	    }
 
@@ -23950,7 +23974,7 @@
 	        value: function render() {
 	            var _this2 = this;
 
-	            var current_player = this.props.player_ordering[0];
+	            var current_player = this.props.players[this.props.player_ordering[0]];
 	            if (this.props.is_switch_time) {
 	                var message = "It's " + current_player + "'s turn!";
 	            } else {
@@ -23972,7 +23996,7 @@
 	                _react2.default.createElement(
 	                    'ul',
 	                    null,
-	                    this.props.test_cases.map(function (data, i) {
+	                    this.props.test_case_inputs.map(function (data, i) {
 	                        return _react2.default.createElement(
 	                            'button',
 	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i },
@@ -24041,8 +24065,12 @@
 	        dead_time: state.round.dead_time,
 	        player_ordering: state.round.player_ordering,
 	        problem: state.round.problem,
-	        test_cases: state.round.test_cases,
-	        is_switch_time: state.round.is_switch_time
+	        test_case_inputs: state.round.test_case_inputs,
+	        test_case_outputs: state.round.test_case_outputs,
+	        is_switch_time: state.round.is_switch_time,
+
+	        players: state.players.players,
+	        you: state.players.you
 	    };
 	};
 
@@ -24052,6 +24080,49 @@
 
 /***/ }),
 /* 219 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = runit;
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
+	function outf(text) {
+	    console.log("Program Output: " + text);
+	}
+
+	function builtinRead(x) {
+	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
+	    return Sk.builtinFiles["files"][x];
+	}
+
+	function runit(prog) {
+	    console.log(prog);
+	    Sk.configure({
+	        output: outf,
+	        read: builtinRead
+	    });
+	    var test_input = "5"; // TODO: replace by test input
+	    var functionCall = prog;
+	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
+	    console.log(functionCall);
+	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+	    var myPromise = Sk.misceval.asyncToPromise(function () {
+	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
+	    });
+	    myPromise.then(function (mod) {
+	        console.log('Compiled successfully');
+	    }, function (err) {
+	        console.log("Program didn't compile!");
+	        console.log(err.toString());
+	    });
+	}
+
+/***/ }),
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24092,13 +24163,12 @@
 	    _createClass(BaseEditor, [{
 	        key: 'componentDidUpdate',
 	        value: function componentDidUpdate() {
-	            //TODO:yadadaydyad
-	            var enabled = this.props.players[0] == 'Thi' && this.props.is_switch_time;
+	            var enabled = this.props.players[0] == this.props.you && this.props.is_switch_time;
 
 	            var node = _reactDom2.default.findDOMNode(this.refs.root);
 	            var editor = ace.edit(node);
 	            editor.setReadOnly(!enabled);
-	            editor.getSession().setMode("ace/mode/javascript");
+	            editor.getSession().setMode("ace/mode/python");
 	            if (enabled) {
 	                editor.setTheme("ace/theme/monokai");
 	            } else {
@@ -24118,6 +24188,7 @@
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
 	        players: state.round.player_ordering,
+	        you: state.players.you,
 	        is_switch_time: state.round.is_switch_time
 	    };
 	};
@@ -24127,7 +24198,7 @@
 	exports.default = Editor;
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24196,49 +24267,6 @@
 	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
-
-/***/ }),
-/* 221 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = runit;
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
-	function outf(text) {
-	    console.log("Program Output: " + text);
-	}
-
-	function builtinRead(x) {
-	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
-	    return Sk.builtinFiles["files"][x];
-	}
-
-	function runit(prog) {
-	    console.log(prog);
-	    Sk.configure({
-	        output: outf,
-	        read: builtinRead
-	    });
-	    var test_input = "5"; // TODO: replace by test input
-	    var functionCall = prog;
-	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
-	    console.log(functionCall);
-	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-	    var myPromise = Sk.misceval.asyncToPromise(function () {
-	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
-	    });
-	    myPromise.then(function (mod) {
-	        console.log('Compiled successfully');
-	    }, function (err) {
-	        console.log("Program didn't compile!");
-	        console.log(err.toString());
-	    });
-	}
 
 /***/ })
 /******/ ]);
