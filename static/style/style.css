@@ -310,3 +310,11 @@ body, html {
     padding-bottom: 1%;
     color: white;
 }
+
+#red-text {
+    color : red;
+}
+
+#main-title {
+   font-size  : 200px;
+}
