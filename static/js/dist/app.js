@@ -74,11 +74,11 @@
 
 	var _sidebar2 = _interopRequireDefault(_sidebar);
 
-	var _editor = __webpack_require__(220);
+	var _editor = __webpack_require__(219);
 
 	var _editor2 = _interopRequireDefault(_editor);
 
-	var _WebSocketConnection = __webpack_require__(221);
+	var _WebSocketConnection = __webpack_require__(220);
 
 	var _WebSocketConnection2 = _interopRequireDefault(_WebSocketConnection);
 
@@ -23976,7 +23976,7 @@
 
 	var _reactRedux = __webpack_require__(159);
 
-	var _skulptRun = __webpack_require__(219);
+	var _skulptRun = __webpack_require__(221);
 
 	var _skulptRun2 = _interopRequireDefault(_skulptRun);
 
@@ -24013,6 +24013,8 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var _this3 = this;
+
 	            if (this.props.time_limit && this.props.players && this.props.player_ordering) {
 	                var current_player = this.props.players[this.props.player_ordering[0]];
 	                if (this.props.is_switch_time) {
@@ -24034,13 +24036,23 @@
 	                        return _react2.default.createElement(
 	                            'button',
 	                            { id: 'test-case', type: 'button', className: 'btn btn-primary', key: i, onClick: function onClick() {
-	                                    return (0, _skulptRun2.default)(_this2.state.code, _this2.props.test_case_inputs[i], _this2.props.test_case_outputs[i]);
+	                                    return (0, _skulptRun2.default)(_this2.state.code, _this2.props.test_case_inputs, _this2.props.test_case_outputs);
 	                                } },
 	                            'Test case: ',
 	                            i + 1
 	                        );
 	                    }.bind(this)),
-	                    _react2.default.createElement('div', null),
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        _react2.default.createElement(
+	                            'button',
+	                            { id: 'run-button', type: 'button', className: 'btn btn-danger', onClick: function onClick() {
+	                                    return (0, _skulptRun2.default)(_this3.state.code, _this3.props.test_case_inputs, _this3.props.test_case_outputs);
+	                                } },
+	                            'Run'
+	                        )
+	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { id: 'turn-duration' },
@@ -24105,49 +24117,6 @@
 
 /***/ }),
 /* 219 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = runit;
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
-	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
-	function outf(text) {
-	    console.log("Program Output: " + text);
-	}
-
-	function builtinRead(x) {
-	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
-	    return Sk.builtinFiles["files"][x];
-	}
-
-	function runit(prog, test_input, expected_output) {
-	    //TODO: Use expected output
-	    console.log(expected_output);
-	    Sk.configure({
-	        output: outf,
-	        read: builtinRead
-	    });
-	    var functionCall = prog;
-	    var functionCall = functionCall + "\n" + "print func(" + test_input + ")";
-	    console.log(functionCall);
-	    (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-	    var myPromise = Sk.misceval.asyncToPromise(function () {
-	        return Sk.importMainWithBody("<stdin>", false, functionCall, true);
-	    });
-	    myPromise.then(function (mod) {
-	        console.log('Compiled successfully');
-	    }, function (err) {
-	        console.log("Program didn't compile!");
-	        console.log(err.toString());
-	    });
-	}
-
-/***/ }),
-/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24225,7 +24194,7 @@
 	exports.default = Editor;
 
 /***/ }),
-/* 221 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24294,6 +24263,76 @@
 	var mapDispatchToProps = { wsConnect: _WSClientActions.wsConnect };
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(WebSocketConnection);
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = runit;
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt.min.js'></script>");
+	document.writeln("<script type='text/javascript' src='http://www.skulpt.org/static/skulpt-stdlib.js'></script>");
+
+	function builtinRead(x) {
+	    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) throw "File not found: '" + x + "'";
+	    return Sk.builtinFiles["files"][x];
+	}
+
+	function runit(prog, test_inputs, expected_outputs) {
+	    var tests_failed = 0;
+	    var tests_passed = 0;
+	    var test_failed_callback = function test_failed_callback() {
+	        tests_failed++;
+	        if (tests_failed + tests_passed >= test_inputs.length) {
+	            console.log("TESTS FAILED: " + tests_failed);
+	            console.log("TESTS PASSED: " + tests_passed);
+	        }
+	    };
+	    var test_passed_callback = function test_passed_callback() {
+	        tests_passed++;
+	        if (tests_failed + tests_passed >= test_inputs.length) {
+	            console.log("TESTS FAILED: " + tests_failed);
+	            console.log("TESTS PASSED: " + tests_passed);
+	        }
+	    };
+	    for (var i = 0; i < test_inputs.length; i++) {
+	        var test_input = test_inputs[i];
+	        var expected_output = expected_outputs[i];
+	        var outf = function outf(text) {
+	            if (text == "\n") {
+	                return;
+	            }
+	            if (text == expected_output) {
+	                test_passed_callback();
+	            } else {
+	                test_failed_callback();
+	            }
+	        };
+	        Sk.configure({
+	            output: outf,
+	            read: builtinRead
+	        });
+	        var functionCall = prog;
+	        functionCall = "def func(num):\n    result = 1\n    for i in range(1, num+1):\n       result *= i\n    return result";
+	        functionCall = functionCall + "\n" + "print func(" + test_input + ")";
+
+	        (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+	        var myPromise = Sk.misceval.asyncToPromise(function () {
+	            return Sk.importMainWithBody("<stdin>", false, functionCall, true);
+	        });
+	        myPromise.then(function (mod) {
+	            console.log('Compiled successfully');
+	        }, function (err) {
+	            console.log("Program didn't compile!");
+	            console.log(err.toString());
+	            test_failed_callback();
+	        });
+	    }
+	}
 
 /***/ })
 /******/ ]);
