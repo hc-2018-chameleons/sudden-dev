@@ -23923,18 +23923,33 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	function getCode() {
+	    var editor = ace.edit('firepad');
+	    return editor.getValue();
+	}
+
 	var Sidebar = function (_Component) {
 	    _inherits(Sidebar, _Component);
 
 	    function Sidebar(props) {
 	        _classCallCheck(this, Sidebar);
 
-	        return _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
+
+	        _this.state = { code: '' };
+	        return _this;
 	    }
 
 	    _createClass(Sidebar, [{
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            this.state.code = getCode();
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var _this2 = this;
+
 	            var current_player = this.props.player_ordering[0];
 	            if (this.props.is_switch_time) {
 	                var message = "It's " + current_player + "'s turn!";
@@ -23980,7 +23995,10 @@
 	                ),
 	                _react2.default.createElement(
 	                    'button',
-	                    { id: 'player-button', type: 'button', className: 'btn btn-danger', onClick: _skulptRun2.default },
+	                    { id: 'player-button', type: 'button', className: 'btn btn-danger',
+	                        onClick: function onClick() {
+	                            return (0, _skulptRun2.default)(_this2.state.code);
+	                        } },
 	                    'Run'
 	                ),
 	                _react2.default.createElement(
@@ -24209,8 +24227,8 @@
 	    return Sk.builtinFiles["files"][x];
 	}
 
-	function runit() {
-	    var prog = document.getElementById("firepad"); // Get the code written by user here
+	function runit(prog) {
+	    //var prog = document.getElementById("firepad"); // Get the code written by user here
 	    console.log(prog);
 	    // var mypre = document.getElementById("output");
 	    // mypre.innerHTML = '';

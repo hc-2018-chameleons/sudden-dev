@@ -20,7 +20,6 @@ class BaseEditor extends Component {
         } else {
             editor.setTheme("ace/theme/clouds");
         }
-
     }
 
     render() {

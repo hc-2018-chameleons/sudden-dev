@@ -19,8 +19,8 @@ function builtinRead(x) {
     return Sk.builtinFiles["files"][x];
 }
 
-export default function runit() {
-    var prog = document.getElementById("firepad"); // Get the code written by user here
+export default function runit(prog) {
+    //var prog = document.getElementById("firepad"); // Get the code written by user here
     console.log(prog);
     // var mypre = document.getElementById("output");
     // mypre.innerHTML = '';

@@ -2,9 +2,19 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import runit from '../skulpt-run.js'
 
+function getCode() {
+    let editor = ace.edit('firepad');
+    return editor.getValue();
+}
+
 class Sidebar extends Component {
     constructor(props) {
         super(props);
+        this.state = {code:''};
+    }
+
+    componentDidUpdate() {
+        this.state.code = getCode();
     }
 
     render() {
@@ -33,7 +43,8 @@ class Sidebar extends Component {
               }
           </ul>
 
-          <button id="player-button" type="button" className="btn btn-danger" onClick={runit}>Run</button>
+          <button id="player-button" type="button" className="btn btn-danger" 
+            onClick={() => runit(this.state.code)}>Run</button>
 
           <div id="turn-duration">
 
