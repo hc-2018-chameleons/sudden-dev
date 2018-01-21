@@ -171,21 +171,20 @@ body, html {
 }
 
 @keyframes flashBlackRed {
-    from {
-        background-color: red;
-        color: black;
-    }
-    to {
-        background-color: black;
-        color: red;}
+    0% {background-color: red; color: black}
+    16.6% {background-color: black; color: red}
+    33.2% {background-color: red; color: black}
+    49.8% {background-color: black; color: red}
+    66.4% {background-color: red; color: black}
+    83% {background-color: black; color: red}
+    100% {background-color: green; color: white}
 }
+
 
 #turn-duration {
     text-align: center;
     height: auto;
-    animation-name: flashBlackRed;
-    animation-duration: 1s;
-    animation-iteration-count: 5;
+    animation: flashBlackRed 6s;
 }
 
 #clock-text {
